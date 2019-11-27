@@ -154,11 +154,18 @@ app.get("/api/displayFavorites", function(req, res)
     connection.connect(function(error)
     {
         if (error) throw error;
-        connection.query(sql, sqlParams, function(err, results)
-        {
-            if (err) throw err;
-            res.send(results);
-        }); //query
+        try
+            {
+            connection.query(sql, sqlParams, function(err, results)
+            {
+                if (err) throw err;
+                res.send(results);
+            }); //query
+        }
+        catch(err)
+            {
+                console.log(err);
+            }
         
         //handle errors during connection
         //eg 'PROTOCOL_CONNECTION_LOST'
