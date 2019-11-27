@@ -176,7 +176,14 @@ app.get("/api/displayFavorites", function(req, res)
                 console.log(err.message);
             }
         });
-    
+        
+        //handle errors for closed connection
+        //eg 'connections closed without response'
+        connection.on('close', function(err) 
+        {
+            console.log(err.code);
+        });
+
     }); //connect
     
 }); //displayKeywords
