@@ -1,0 +1,32 @@
+<%- include('partials/header.ejs') %>
+
+    <form action="/search">
+        <input type="text" size="10" placeholder="Type keyword" name="keyword" id ="keyword" value = "<%=keyword%>" >
+        <button>
+            Search
+        </button>
+        <a href="/displayKeywords" id="favLink">See Selected</a>
+    </form>
+    <br>
+    
+    <div class="resultsContainer">
+        
+        <% items.forEach(function(item, i) { 
+            var url = item.info.imageUrl.replace("<SIZE>","300");%>
+            
+            <%- (i%3==0 & i!=0)?'<br>':''; %>
+            <div class="itemContainer">
+                <span class='description' id='description'><%=item.info.productLabel%></span>
+                <div class = "imageContainer">
+                    <img class="image" src='<%=url%>' width='200' height='200'><img class='favoriteIcon' src='img/checkbox_empty.png'>
+                </div>
+                <span class='itemPrice' id='itemPrice'>&dollar;<%=item.storeSku.pricing.originalPrice%><br></span>
+                <span class='productID' id='productID'>(<%=item.productId%>)</span>
+                
+            </div>
+        
+        <% });    %>
+        
+    </div>
+        
+<%- include('partials/footer.ejs') %>
