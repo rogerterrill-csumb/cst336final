@@ -14,12 +14,12 @@ $(document).ready(function()
         {
             $(this).attr("src","img/checkbox_full.png");
             //console.log(description);
-            updateFavorite("add", parseInt(productID.replace("(","")), imageURL, description, parseFloat(price.replace("$","")));
+            updateProduct("add", parseInt(productID.replace("(","")), imageURL, description, parseFloat(price.replace("$","")));
         }
         else
         {
             $(this).attr("src","img/checkbox_empty.png");
-           updateFavorite("delete", parseInt(productID.replace("(","")));
+           updateProduct("delete", parseInt(productID.replace("(","")));
         }
         
     }); //favorite onClick  
@@ -29,7 +29,7 @@ $(document).ready(function()
         $.ajax(
         {
             method: "GET",
-            url:    "/api/displayFavorites",
+            url:    "/api/displayItems",
             data:   { 
                         "keyword": $(this).text().trim(),
                     },
@@ -67,12 +67,12 @@ $(document).ready(function()
                                     {
                                         $(this).attr("src","img/checkbox_empty.png");
                                         console.log("pr: " + parseInt(productID.replace("(","")));
-                                        updateFavorite("delete", parseInt(productID.replace("(","")));
+                                        updateProduct("delete", parseInt(productID.replace("(","")));
                                     }
                                     else
                                     {
                                         $(this).attr("src","img/checkbox_full.png");
-                                        updateFavorite("add", parseInt(productID.replace("(","")), imageURL, description, parseFloat(price.replace("$","")));
+                                        updateProduct("add", parseInt(productID.replace("(","")), imageURL, description, parseFloat(price.replace("$","")));
                                     }
                                     
                         }); //favorite onClick  
@@ -81,12 +81,12 @@ $(document).ready(function()
         
     }); //keywordLink onClick 
     
-    function updateFavorite(action, productID, imageURL, description, price)
+    function updateProduct(action, productID, imageURL, description, price)
     {
         $.ajax(
         {
             method: "GET",
-            url:    "/api/updateFavorites",
+            url:    "/api/updateItems",
             data:   {
                         "productID": productID,
                         "imageURL": imageURL,

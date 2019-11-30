@@ -1,42 +1,16 @@
 const request = require("request");
 const mysql = require("mysql");
+const bcrypt = require("bcrypt");
 
 module.exports = 
 {
     
-    /**Return random image URLs from API
+    /**Return product info from API
      * @param string keyword - search term
      * @param int imageCount - number of random images
-     * @return array of image URLs
+     * @return array of product info (description, price, imageURL)
      */
-     
-    getRandomImages_cb: function(keyword, imageCount, callback)
-    {
-        var requestURL = "https://api.unsplash.com/photos/random?query=" + keyword
-            + "&count=" + imageCount + "&orientation=landscape"
-            + "&client_id=d46d13111e60d1506a3a232ff6e8ff3e3a929489a65b2fa6c55c515e4704a666";
-        
-        request(requestURL, function (error, response, body)
-        {
-       
-            if(!error)
-            {
-                var parsedData = JSON.parse(body);
-                var imageURLs = [];
-                for (let i=0;i < imageCount;i ++)
-                {
-                    imageURLs.push(parsedData[i].urls.regular);
-                }
-            
-                callback(imageURLs);
-            }
-            else
-            {
-               console.log("error", error);
-            }
-        }); //request
-    }, //function getRandomImages WITH comma
-    
+  
     getItems: function(keyword)
     {
         var requestURL = "https://www.homedepot.com/SearchNav/v2/pages/search?keyword=" 
@@ -88,9 +62,75 @@ module.exports =
             port: 3306
         });
         
-        
-        
+         //handle errors during connection
+        connection.on('error', function(err) 
+        {
+            console.log(err.code);
+        });
+ 
         return connection;
-    } //createConnection
+    }, //createConnection
+    
+    /**check for valid username
+     * @param string username
+     * @return array with username and password
+     */
+    
+    checkUsername: function(username)
+    {
+        let sql = "SELECT username, password FROM users WHERE username = ?";
+        return new Promise(function(resolve,reject)
+        {
+            let connection = module.exports.createConnection();
+            connection.connect(function(err)
+            {
+                if(err) throw err;
+                connection.query(sql, [username], function(err,rows,fields)
+                {
+                    if(err) throw err;
+                    //console.log("rows found:" + rows.length);
+                    resolve(rows);
+                }); //sql
+            }); //connection
+        }); //promise
+    },
+    
+    /**check for valid password
+     * @param string password - user entered password
+     * @param string hashedValue - password hash from database
+     * @return boolean
+     */
+    
+    checkPassword: function(password, hashedValue)
+    {
+        return new Promise(function(resolve, reject)
+        {
+            console.log("hash: " + hashedValue);
+            bcrypt.compare(password, hashedValue, function(err, result)
+            {
+                if(err) throw err;
+                //console.log("Results:" + result);
+                resolve(result);
+            }); // compare
+        }); // promise
+    },
+    
+    /**check for session authentication 
+     * @param string req
+     * @param string res
+     * @param string next
+     */
+     
+    isAuthenticated: function(req, res, next)
+    {
+        if(!req.session.authenticated)
+        {
+            res.redirect("/");
+        }
+        else
+        {
+            next();
+        }
+    }
     
 }; //modules
