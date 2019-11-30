@@ -105,7 +105,7 @@ module.exports =
     {
         return new Promise(function(resolve, reject)
         {
-            console.log("hash: " + hashedValue);
+            //console.log("hash: " + hashedValue);
             bcrypt.compare(password, hashedValue, function(err, result)
             {
                 if(err) throw err;
