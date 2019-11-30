@@ -42,13 +42,13 @@ app.get("/admin", tools.isAuthenticated, function(req,res)
 });
 
 //product search route
-app.get("/productSearch", function(req,res)
+app.get("/productSearch", tools.isAuthenticated, function(req,res)
 {
     res.render("productSearch.ejs");
 });
 
 //keyword search route
-app.get("/search",async function(req,res)
+app.get("/search", tools.isAuthenticated, async function(req,res)
 {
     var keyword = req.query.keyword;
     
@@ -64,7 +64,7 @@ app.get("/search",async function(req,res)
 }); //search
 
 //update database route
-app.get("/api/updateItems", function(req, res)
+app.get("/api/updateItems", tools.isAuthenticated, function(req, res)
 {
     var connection = tools.createConnection();
     
@@ -112,7 +112,7 @@ app.get("/api/updateItems", function(req, res)
 }); //update items
 
 //display keyword route
-app.get("/displayKeywords", async function(req, res)
+app.get("/displayKeywords", tools.isAuthenticated, async function(req, res)
 {
     //var imageURLs = await tools.getRandomImages("",1);
     var connection = tools.createConnection();
@@ -149,7 +149,7 @@ app.get("/displayKeywords", async function(req, res)
 }); //displayKeywords
 
 //display items route
-app.get("/api/displayItems", function(req, res)
+app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
 {
     var connection = tools.createConnection();
     var sql = "SELECT productID, imageURL, description, price FROM products WHERE keyword = ?";
