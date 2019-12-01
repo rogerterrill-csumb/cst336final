@@ -78,7 +78,7 @@ app.get("/api/updateItems", tools.isAuthenticated, function(req, res)
     }
     else
     {
-        var sql = "DELETE FROM products where productID = ?";
+        var sql = "UPDATE products SET status = 0 where productID = ?";
         var sqlParams = [req.query.productID];
     }
 
