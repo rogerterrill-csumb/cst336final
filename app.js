@@ -71,14 +71,15 @@ app.get("/api/updateItems", tools.isAuthenticated, function(req, res)
     
     if(req.query.action == "add")
     {
-        var sql = "INSERT INTO products(productID, imageURL, description, price, keyword) VALUES(?, ?, ?, ?, ?)";
+        var sql = "INSERT INTO products(productID, imageURL, description, price, keyword) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = 1";
         
         //console.log("pr" + req.query.productID);
         var sqlParams = [req.query.productID, req.query.imageURL,req.query.description,req.query.price, req.query.keyword];
     }
     else
     {
-        var sql = "UPDATE products SET status = 0 where productID = ?";
+        // set status = 0 if deselected (deleted)
+        var sql = "UPDATE products SET status = 0 WHERE productID = ?";
         var sqlParams = [req.query.productID];
     }
 
@@ -117,7 +118,7 @@ app.get("/displayKeywords", tools.isAuthenticated, async function(req, res)
 {
     //var imageURLs = await tools.getRandomImages("",1);
     var connection = tools.createConnection();
-    var sql = "SELECT DISTINCT keyword FROM products ORDER BY keyword";
+    var sql = "SELECT DISTINCT keyword FROM products WHERE status = 1 ORDER BY keyword";
     
     connection.connect(function(error)
     {
@@ -153,7 +154,7 @@ app.get("/displayKeywords", tools.isAuthenticated, async function(req, res)
 app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
 {
     var connection = tools.createConnection();
-    var sql = "SELECT productID, imageURL, description, price FROM products WHERE keyword = ?";
+    var sql = "SELECT productID, imageURL, description, price FROM products WHERE status = 1 AND keyword = ?";
     var sqlParams = [req.query.keyword];
     
     connection.connect(function(error)
