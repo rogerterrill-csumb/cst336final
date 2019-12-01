@@ -93,6 +93,11 @@ h1
     cursor: pointer;
 }
 
+.keywordLink:hover
+{
+    color: red;
+}
+
 .favoriteIcon
 {
     vertical-align: middle;

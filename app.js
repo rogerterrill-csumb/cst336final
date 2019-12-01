@@ -71,7 +71,8 @@ app.get("/api/updateItems", tools.isAuthenticated, function(req, res)
     
     if(req.query.action == "add")
     {
-        var sql = "INSERT INTO products(productID, imageURL, description, price, keyword) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = 1";
+        var sql = "INSERT INTO products(productID, imageURL, description, price,"
+            + " keyword) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = 1";
         
         //console.log("pr" + req.query.productID);
         var sqlParams = [req.query.productID, req.query.imageURL,req.query.description,req.query.price, req.query.keyword];
