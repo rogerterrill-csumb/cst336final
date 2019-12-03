@@ -8,9 +8,14 @@ body
     font-size: 2.5em;
 }
 
-a
+.whiteText
 {
     color: white;    
+}
+
+.blackText
+{
+    color: black; 
 }
 
 input, button
