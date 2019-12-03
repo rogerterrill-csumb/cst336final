@@ -57,6 +57,15 @@ app.get('/search', tools.isAuthenticated, async function(req, res) {
   }
 }); //search
 
+//shop route
+app.get('/shop', async function(req, res) {
+  //promise method
+  var items = [];
+  items = await tools.getDBItems();
+  console.log('items ' + items);
+  res.render('shop.ejs', { items: items });
+}); //search
+
 //update database route
 app.get('/api/updateItems', tools.isAuthenticated, function(req, res) {
   var connection = tools.createConnection();
