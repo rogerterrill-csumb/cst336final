@@ -98,6 +98,27 @@ $(document).ready(function()
             
         });
     }
-    
+   
 }); //document ready
 
+function getItemCount()
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/getItemCount",
+        data:   {
+                },
+        success: function(result, status)
+        {
+            //clear the results
+            $("#activeResults").html("");
+            
+            //show totals
+            $("#totalResults").append(result[0].total);
+            $("#activeResults").append(result[1].total);
+            $("#inactiveResults").append(result[2].total);
+        }
+    });
+        
+} //getItemCount

@@ -162,7 +162,7 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
     {
         if (error) throw error;
         try
-            {
+        {
             connection.query(sql, sqlParams, function(err, results)
             {
                 if (err) throw err;
@@ -170,9 +170,9 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
             }); //query
         }
         catch(err)
-            {
-                console.log(err);
-            }
+        {
+            console.log(err);
+        }
         
         //handle errors during connection
         //eg 'PROTOCOL_CONNECTION_LOST'
@@ -201,6 +201,31 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
     }); //connect
     
 }); //displayKeywords
+
+//send item count
+app.get("/api/getItemCount", tools.isAuthenticated, function(req, res)
+{
+    var connection = tools.createConnection();
+    var sql = "SELECT count(*) as 'total' FROM products"
+        + " UNION SELECT count(*) as 'activeTotal' from products WHERE status = 1"
+        + " UNION SELECT count(*) as 'inactiveTotal' from products WHERE status = 0";
+    connection.connect(function(error)
+    {
+        if (error) throw error;
+        try
+        {
+            connection.query(sql, function(err, results)
+            {
+                if (err) throw err;
+                res.send(results);
+            }); //query
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }); //connect
+}); //function
 
 //login submission route
 app.post("/login", async function(req, res)
@@ -234,7 +259,7 @@ app.post("/login", async function(req, res)
 }); //post login
 
 //server listener
-app.listen(process.env.PORT,process.env.IP, function()
+app.listen(process.env.PORT, process.env.IP || '127.0.0.1', function()
 {
     console.log("Express server is running...");
 });

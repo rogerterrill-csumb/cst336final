@@ -1,6 +1,6 @@
 const request = require("request");
 const mysql = require("mysql");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt-nodejs");
 
 module.exports = 
 {
@@ -131,6 +131,6 @@ module.exports =
         {
             next();
         }
-    }
+    },
     
 }; //modules
