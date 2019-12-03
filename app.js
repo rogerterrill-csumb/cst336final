@@ -3,6 +3,18 @@ const request = require("request");
 const app = express();
 const tools = require("./tools.js");
 const session = require("express-session");
+const MySQLStore = require('express-mysql-session')(session);
+
+var options = {
+	
+	host: 'cst336final.mysql.database.azure.com',
+    port: 3306,
+    user: 'dbadmin@cst336final',
+    password: 'Otter2020!',
+    database: 'eStore',
+};
+
+var sessionStore = new MySQLStore(options);
 
 app.set('view engine', 'ejs');
 
@@ -11,7 +23,8 @@ app.use(session(
     {
         secret: "Z1BbyuR6LWG6Rehi9oxj",
         resave: true,
-        saveUninitialized: true
+        saveUninitialized: true,
+        store: sessionStore
     }));
 app.use(express.urlencoded({extended: true}));
 
