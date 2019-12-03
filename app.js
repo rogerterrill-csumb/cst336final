@@ -76,44 +76,51 @@ app.get("/shop", async function(req, res) {
 }); //search
 
 app.post("/shop", function(req, res) {
-  console.log(req.body);
-  // var connection = tools.createConnection();
-  // var sql =
-  //   "SELECT productID, imageURL, description, price FROM products WHERE status = 1 AND keyword = ?";
-  // var sqlParams = [req.query.keyword];
+  var connection = tools.createConnection();
+  let description = req.body.description;
+  let type = req.body.type;
+  let pricefrom = req.body.pricefrom || 0;
+  let priceto = req.body.pricetoo || 10000;
+  console.log("Type", type);
 
-  // connection.connect(function(error) {
-  //   if (error) throw error;
-  //   try {
-  //     connection.query(sql, sqlParams, function(err, results) {
-  //       if (err) throw err;
-  //       res.send(results);
-  //     }); //query
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
 
-  //   //handle errors during connection
-  //   //eg 'PROTOCOL_CONNECTION_LOST'
-  //   connection.on("error", function(err) {
-  //     console.log(err.code);
-  //   });
+  var sql =
+    "SELECT * FROM products WHERE description LIKE '%%' AND price BETWEEN 0 AND 10000";
+  var sqlParams = [req.body.description, req.body.type, req.body.pricefrom, req.body.priceto];
 
-  //   //handle errors for end of connection
-  //   //eg. ER_TOO_MANY_USER_CONNECTIONS:
-  //   connection.end(function(err) {
-  //     if (err) {
-  //       console.log(err.message);
-  //     }
-  //   });
+  connection.connect(function(error) {
+    if (error) throw error;
+    try {
+      connection.query(sql, function(err, results) {
+        if (err) throw err;
+        console.log(results);
+        res.send(results);
+      }); //query
+    } catch (err) {
+      console.log(err);
+    }
 
-  //   //handle errors for closed connection
-  //   //eg 'connections closed without response',ECONNRESET, ...
-  //   connection.on("close", function(err) {
-  //     console.log(err.code);
-  // });
-  // }); //connect
-  res.redirect("/shop");
+    //handle errors during connection
+    //eg 'PROTOCOL_CONNECTION_LOST'
+    connection.on("error", function(err) {
+      console.log(err.code);
+    });
+
+    //handle errors for end of connection
+    //eg. ER_TOO_MANY_USER_CONNECTIONS:
+    connection.end(function(err) {
+      if (err) {
+        console.log(err.message);
+      }
+    });
+
+    //handle errors for closed connection
+    //eg 'connections closed without response',ECONNRESET, ...
+    connection.on("close", function(err) {
+      console.log(err.code);
+  });
+  }); //connect
+  // res.redirect("/shop");
 });
 
 // Post to cart
