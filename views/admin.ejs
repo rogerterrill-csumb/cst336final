@@ -4,30 +4,20 @@
         <h1>
            Administration
         </h1>
-        <br>
-        <div>
-            <ul>
-                <li>
-                    <a href="/productSearch">Product Search</a>
-                </li>
-                <li>
-                    Inventory Control
-                </li>
-                <li>
-                    Report 1
-                </li>
-                <li>
-                    Report 2
-                </li>
-                <li>
-                    Report 3
-                </li>
-            </ul>
-        </div>
-         <form action="/logout">
-            <button>Logout</button>
-        </form>
+        <a href="/logout" class="whiteText">Logout</a>
         <br>
     </main>
+    <br>
+    <div>
+        <a href="/productSearch" class="blackText">Add/Remove Products</a>
+    </div>
+    <div>
+        <button onclick="getItemCount()">Show Product Totals Statistics</button><br>
+        <div id="totalResults"></div><br>
+        <button onclick="getPrices()">Show Product Price Statistics</button><br>
+        <div id="priceResults"></div><br>
+        </p>
+        
+    </div>
 
 <%- include('partials/footer.ejs') %>
