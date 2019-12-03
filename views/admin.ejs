@@ -9,16 +9,15 @@
     </main>
     <br>
     <div>
-        <a href="/productSearch" class="blackText">Product Search</a>
+        <a href="/productSearch" class="blackText">Add/Remove Products</a>
     </div>
     <div>
-        <p>
-            Number of items in products database<br>
-              <button onclick="getItemCount()">Show Totals</button><br>
-              Total: <span id="totalResults"></span><br>
-              Active:<span id="activeResults"></span><br>
-              Inactive:<span id="inactiveResults"></span><br>
+        <button onclick="getItemCount()">Show Product Totals Statistics</button><br>
+        <div id="totalResults"></div><br>
+        <button onclick="getPrices()">Show Product Price Statistics</button><br>
+        <div id="priceResults"></div><br>
         </p>
+        
     </div>
 
 <%- include('partials/footer.ejs') %>

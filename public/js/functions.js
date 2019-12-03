@@ -112,12 +112,30 @@ function getItemCount()
         success: function(result, status)
         {
             //clear the results
-            $("#activeResults").html("");
+            $("#totalResults").html("");
             
             //show totals
-            $("#totalResults").append(result[0].total);
-            $("#activeResults").append(result[1].total);
-            $("#inactiveResults").append(result[2].total);
+            $("#totalResults").append("Total: " + result[0].total + "<br>Active: " + result[1].total +"<br>Inactive: " + result[2].total);
+        }
+    });
+        
+} //getItemCount
+
+function getPrices()
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/getPrices",
+        data:   {
+                },
+        success: function(result, status)
+        {
+            //clear the results
+            $("#priceResults").html("");
+            
+            //show totals
+            $("#priceResults").append("Minimum: " + result[0].price + "<br>Maximum: " + result[1].price +"<br>Average: " + result[2].price);
         }
     });
         

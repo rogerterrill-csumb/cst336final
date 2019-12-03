@@ -240,6 +240,31 @@ app.get("/api/getItemCount", tools.isAuthenticated, function(req, res)
     }); //connect
 }); //function
 
+//send prices
+app.get("/api/getPrices", tools.isAuthenticated, function(req, res)
+{
+    var connection = tools.createConnection();
+    var sql = "SELECT CONCAT('$', FORMAT(min(price),2)) as 'price' FROM products"
+        + " UNION SELECT CONCAT('$', FORMAT(max(price),2)) as 'price' FROM products"
+        + " UNION SELECT CONCAT('$', FORMAT(avg(price),2)) as 'price' FROM products";
+    connection.connect(function(error)
+    {
+        if (error) throw error;
+        try
+        {
+            connection.query(sql, function(err, results)
+            {
+                if (err) throw err;
+                res.send(results);
+            }); //query
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }); //connect
+}); //function
+
 //login submission route
 app.post("/login", async function(req, res)
 {
