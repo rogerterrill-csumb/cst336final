@@ -85,13 +85,13 @@ app.post("/shop", function(req, res) {
 
 
   var sql =
-    "SELECT * FROM products WHERE description LIKE '%%' AND price BETWEEN 0 AND 10000";
-  var sqlParams = [req.body.description, req.body.type, req.body.pricefrom, req.body.priceto];
+    "SELECT * FROM products WHERE description LIKE ? AND price BETWEEN ? AND ?";
+  var sqlParams = [description, pricefrom, priceto];
 
   connection.connect(function(error) {
     if (error) throw error;
     try {
-      connection.query(sql, function(err, results) {
+      connection.query(sql, sqlParams, function(err, results) {
         if (err) throw err;
         console.log(results);
         res.send(results);
@@ -228,6 +228,47 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res) {
     try {
       connection.query(sql, sqlParams, function(err, results) {
         if (err) throw err;
+        res.send(results);
+      }); //query
+    } catch (err) {
+      console.log(err);
+    }
+
+    //handle errors during connection
+    //eg 'PROTOCOL_CONNECTION_LOST'
+    connection.on("error", function(err) {
+      console.log(err.code);
+    });
+
+    //handle errors for end of connection
+    //eg. ER_TOO_MANY_USER_CONNECTIONS:
+    connection.end(function(err) {
+      if (err) {
+        console.log(err.message);
+      }
+    });
+
+    //handle errors for closed connection
+    //eg 'connections closed without response',ECONNRESET, ...
+    connection.on("close", function(err) {
+      console.log(err.code);
+    });
+  }); //connect
+}); //displayKeywords
+
+//display items route
+app.get("/api/displaySearchItems", function(req, res) {
+  var connection = tools.createConnection();
+  var sql =
+    "SELECT * FROM products WHERE keyword like ?";
+  var sqlParams = [req.query.keyword];
+
+  connection.connect(function(error) {
+    if (error) throw error;
+    try {
+      connection.query(sql, sqlParams, function(err, results) {
+        if (err) throw err;
+        console.log(results);
         res.send(results);
       }); //query
     } catch (err) {

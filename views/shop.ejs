@@ -1,11 +1,11 @@
 <%- include('partials/header.ejs') %>
 
 <h1>Product Search</h1>
-<form id="guestSearch" method="POST" action="/shop">
+<form>
   Description:<br />
   <input type="text" name="description" value="" /><br />
   Type:<br />
-  <select name="type">
+  <select id="type">
     <option value="axe">Axe</option>
     <option value="chainsaw">Chainsaw</option>
     <option value="bat">Bat</option>
@@ -15,33 +15,11 @@
   <input type="text" name="pricefrom" value="" /><br /><br />
   Price To:<br />
   <input type="text" name="priceto" value="" /><br /><br />
-  <input type="submit" value="Submit" />
-</form>dddddd
+  <input type="button" value="Submit" id="searchBtn"/>
+</form>
 
-<div class="resultsContainer">
-  <% items.forEach(function(item, i) { %> <%- (i%3==0 & i!=0)?'<br />':''; %>
+<div class="resultsContainer" id="searchContainer">
 
-  <div class="itemContainer">
-    <form action="/cart" method="POST">
-      <input type="hidden" name="product_id" value="<%= item.productID %>" />
-      <input type="hidden" name="qty" value="1" />
-      <input type="hidden" name="imageurl" value="<%=item.imageURL%>" />
-      <input type="hidden" name="description" value="<%=item.description%>" />
-      <input type="hidden" name="price" value="<%=item.price%>" />
-
-      <span class="description" id="description"><%=item.description%></span>
-      <div class="imageContainer">
-        <img class="image" src="<%=item.imageURL%>" width="200" height="200" />
-      </div>
-      <span class="itemPrice" id="itemPrice"
-        >&dollar;<%=item.price%><br
-      /></span>
-      <br />
-      <button>Add To Cart</button>
-    </form>
-  </div>
-
-  <% }); %>
 </div>
 
 <%- include('partials/footer.ejs') %>
