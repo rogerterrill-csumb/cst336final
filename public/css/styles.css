@@ -8,6 +8,11 @@ body
     font-size: 2.5em;
 }
 
+a
+{
+    color: white;    
+}
+
 input, button
 {
     font-size: .8em
@@ -86,6 +91,11 @@ h1
 .keywordLink:hover, button:hover, .favoriteIcon:hover
 {
     cursor: pointer;
+}
+
+.keywordLink:hover
+{
+    color: red;
 }
 
 .favoriteIcon
