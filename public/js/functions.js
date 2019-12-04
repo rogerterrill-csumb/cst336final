@@ -111,7 +111,7 @@ function getItemCount()
                 },
         success: function(result, status)
         {
-            //clear the results
+            //clear the results and start table
             $("#totalResults").html("");
             
             //show totals
@@ -131,11 +131,23 @@ function getPrices()
                 },
         success: function(result, status)
         {
-            //clear the results
-            $("#priceResults").html("");
+            //clear the results and start table
+            $("#priceResults").html("<table id='priceTable'>");
+            $("#priceResults").append("<tr><th>Category</th><th>Count</th><th>Minimum</th><th>Maximum</th><th>Average</th></tr>");
             
-            //show totals
-            $("#priceResults").append("Minimum: " + result[0].price + "<br>Maximum: " + result[1].price +"<br>Average: " + result[2].price);
+            //add favorite images
+            result.forEach(function(row, i)
+            {
+                //show totals
+                $("#priceResults").append("<tr><td>" + result[i].Category
+                    + "</td><td>" + result[i].Count + "</td><td>" + result[i].Minimum
+                    + "</td><td>" + result[i].Maximum + "</td><td>" + result[i].Average
+                    + "</td></tr>");
+            });
+            
+             //end table
+            $("#priceResults").append("</table>");
+            
         }
     });
         
