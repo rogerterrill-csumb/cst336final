@@ -131,18 +131,45 @@ $(document).ready(function() {
   }
 
   $("#searchBtn").on("click", function() {
+    $("#searchContainer").empty();
     $.ajax({
-        method: "GET",
-        url: "/api/displaySearchItems",
-        data: {
-          keyword: $("#type").val(),
-        },
-        success: function(rows, status){
-            rows.forEach(function(item){
-                console.log(item);
-                $("#searchContainer").append(`<h1>${item.description}</h1`);
-            })
+      method: "GET",
+      url: "/api/displaySearchItems",
+      data: {
+        keyword: $("#type").val(),
+        pricefrom: $("#pricefrom").val(),
+        priceto: $("#priceto").val()
+      },
+      success: function(rows, status) {
+        if (rows.length == 0) {
+          $("#searchContainer").append(`<h1>Sorry there are no results</h1>`);
+        } else {
+          rows.forEach(function(item, i) {
+            if (i % 4 == 0) {
+              $("#searchContainer").append(`<br>`);
+            }
+            $("#searchContainer").append(`<div class="itemContainer">
+          <form action="/cart" method="POST">
+            <input type="hidden" name="product_id" value="${item.productID} />
+            <input type="hidden" name="qty" value="1" />
+            <input type="hidden" name="imageurl" value="${item.imageURL}" />
+            <input type="hidden" name="description" value="${item.description}" />
+            <input type="hidden" name="price" value="${item.price}" />
+            <span class="description" id="description">${item.description}</span>
+            <div class="imageContainer">
+              <img class="image" src="${item.imageURL}" width="200" height="200" />
+            </div>
+            <span class="itemPrice" id="itemPrice"
+              >&dollar;${item.price}<br
+            /></span>
+            <br />
+            <button type="button">Add To Cart</button>
+          </form>
+        </div>
+      `);
+          });
         }
-      });
+      }
+    });
   });
 }); //document ready

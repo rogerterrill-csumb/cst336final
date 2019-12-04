@@ -83,7 +83,6 @@ app.post("/shop", function(req, res) {
   let priceto = req.body.pricetoo || 10000;
   console.log("Type", type);
 
-
   var sql =
     "SELECT * FROM products WHERE description LIKE ? AND price BETWEEN ? AND ?";
   var sqlParams = [description, pricefrom, priceto];
@@ -118,7 +117,7 @@ app.post("/shop", function(req, res) {
     //eg 'connections closed without response',ECONNRESET, ...
     connection.on("close", function(err) {
       console.log(err.code);
-  });
+    });
   }); //connect
   // res.redirect("/shop");
 });
@@ -259,9 +258,13 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res) {
 //display items route
 app.get("/api/displaySearchItems", function(req, res) {
   var connection = tools.createConnection();
+  let description = req.query.description || "";
+  let keyword = req.query.keyword;
+  let pricefrom = req.query.pricefrom || 0;
+  let priceto = req.query.priceto || 1000;
   var sql =
-    "SELECT * FROM products WHERE keyword like ?";
-  var sqlParams = [req.query.keyword];
+    "SELECT * FROM products WHERE keyword LIKE ? AND description LIKE %?% AND price BETWEEN ? AND ?";
+  var sqlParams = [keyword, description, pricefrom, priceto];
 
   connection.connect(function(error) {
     if (error) throw error;
