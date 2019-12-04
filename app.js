@@ -244,9 +244,11 @@ app.get("/api/getItemCount", tools.isAuthenticated, function(req, res)
 app.get("/api/getPrices", tools.isAuthenticated, function(req, res)
 {
     var connection = tools.createConnection();
-    var sql = "SELECT CONCAT('$', FORMAT(min(price),2)) as 'price' FROM products"
-        + " UNION SELECT CONCAT('$', FORMAT(max(price),2)) as 'price' FROM products"
-        + " UNION SELECT CONCAT('$', FORMAT(avg(price),2)) as 'price' FROM products";
+    var sql = "SELECT IFNULL(`keyword`,'TOTAL') as 'Category', CONCAT('$', FORMAT(min(price),2)) as 'Minimum', " 
+        + "COUNT(keyword) as 'Count', CONCAT('$', FORMAT(max(price),2)) as 'Maximum', "
+        + "CONCAT('$', FORMAT(avg(price),2)) as 'Average' FROM products WHERE status = 1 "
+        + "GROUP by keyword WITH ROLLUP";
+        
     connection.connect(function(error)
     {
         if (error) throw error;
@@ -296,8 +298,9 @@ app.post("/login", async function(req, res)
     
 }); //post login
 
-//server listener
+// server listener
 app.listen(process.env.PORT, process.env.IP, function()
 {
     console.log("Express server is running...");
 });
+
