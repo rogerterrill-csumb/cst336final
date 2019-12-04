@@ -17,7 +17,9 @@ class Cart {
     }
   }
 
-  static _removeFromCart() {}
+  static _removeFromCart(id, cart) {
+    cart.items = cart.items.filter(item => item.id != id)
+  }
 
   static _updateCart(id, qty, cart) {
     let index = this._inCart(id, cart);

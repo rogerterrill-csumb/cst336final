@@ -88,6 +88,15 @@ app.get('/checkoutupdate', function(req, res){
   res.send("Successfully Updated quantity!");
 })
 
+app.get('/checkoutremove', function(req, res){
+  let id = req.query.id;
+  let cart = req.session.cart;
+
+  Cart._removeFromCart(id, cart);
+
+  res.send("Successfully Removed Item");
+})
+
 
 // Post to cart
 app.get('/cart', function(req, res) {

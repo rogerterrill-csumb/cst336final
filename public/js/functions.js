@@ -215,9 +215,23 @@ $(document).ready(function() {
   });
 
   $(".removeBtn").on("click", function() {
-    alert("You clicked update");
-    location.reload(true);
-  });
+    let id = parseInt(
+        $(this)
+          .parent()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .text()
+      );
+      $.ajax({
+        method: "GET",
+        url: "/checkoutremove",
+        data: { id }
+      });
+      location.reload(true);
+    });
 
   $.ajax({
     method: "GET",
