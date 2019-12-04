@@ -68,59 +68,26 @@ app.get('/search', tools.isAuthenticated, async function(req, res) {
 
 //shop route
 app.get('/shop', async function(req, res) {
-  //promise method
-  var items = [];
-  items = await tools.getDBItems();
-  // console.log("items " + items);
-  res.render('shop.ejs', { items: items });
-}); //search
-
-app.post('/shop', function(req, res) {
-  var connection = tools.createConnection();
-  let description = req.body.description;
-  let type = req.body.type;
-  let pricefrom = req.body.pricefrom || 0;
-  let priceto = req.body.pricetoo || 10000;
-  console.log('Type', type);
-
-  var sql =
-    'SELECT * FROM products WHERE description LIKE ? AND price BETWEEN ? AND ?';
-  var sqlParams = [description, pricefrom, priceto];
-
-  connection.connect(function(error) {
-    if (error) throw error;
-    try {
-      connection.query(sql, sqlParams, function(err, results) {
-        if (err) throw err;
-        console.log(results);
-        res.send(results);
-      }); //query
-    } catch (err) {
-      console.log(err);
-    }
-
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    //handle errors for end of connection
-    //eg. ER_TOO_MANY_USER_CONNECTIONS:
-    connection.end(function(err) {
-      if (err) {
-        console.log(err.message);
-      }
-    });
-
-    //handle errors for closed connection
-    //eg 'connections closed without response',ECONNRESET, ...
-    connection.on('close', function(err) {
-      console.log(err.code);
-    });
-  }); //connect
-  // res.redirect("/shop");
+  res.render('shop.ejs');
 });
+
+app.get('/checkout', function(req, res){
+  let items = req.session.cart.items;
+  console.log("Checkout ", items);
+  res.render('checkout.ejs', {items: items});
+})
+
+app.get('/checkoutupdate', function(req, res){
+  let id = req.query.id;
+  let newQty = req.query.newQty;
+  let cart = req.session.cart;
+
+  Cart._updateCart(id, newQty, cart);
+
+  console.log(id);
+  res.send("Successfully Updated quantity!");
+})
+
 
 // Post to cart
 app.get('/cart', function(req, res) {

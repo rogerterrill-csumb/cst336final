@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 class Cart {
   static _addToCart(product = null, cart) {
-    let index = this._inCart(product, cart);
+    let index = this._inCart(product.id, cart);
     if (index != -1) {
       cart.items[index].qty += 1;
     } else {
@@ -19,16 +19,18 @@ class Cart {
 
   static _removeFromCart() {}
 
-  static _updateCart() {}
+  static _updateCart(id, qty, cart) {
+    let index = this._inCart(id, cart);
+    cart.items[index].qty = qty;
+  }
 
-  static _inCart(item, cart) {
-    const id = element => element.id == item.id;
+  static _inCart(itemid, cart) {
+    const id = element => element.id == itemid;
     return cart.items.findIndex(id);
   }
 
   static _calculateTotal(cart) {
-    cart.items.reduce()
-
+    cart.items.reduce();
   }
 
   static emptyCart() {}
