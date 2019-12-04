@@ -138,7 +138,8 @@ $(document).ready(function() {
       data: {
         keyword: $("#type").val(),
         pricefrom: $("#pricefrom").val(),
-        priceto: $("#priceto").val()
+        priceto: $("#priceto").val(),
+        description: $("#description").val(),
       },
       success: function(rows, status) {
         if (rows.length == 0) {
@@ -151,7 +152,6 @@ $(document).ready(function() {
             $("#searchContainer").append(`<div class="itemContainer">
           <form action="/cart" method="POST">
             <input type="hidden" name="product_id" value="${item.productID} />
-            <input type="hidden" name="qty" value="1" />
             <input type="hidden" name="imageurl" value="${item.imageURL}" />
             <input type="hidden" name="description" value="${item.description}" />
             <input type="hidden" name="price" value="${item.price}" />
