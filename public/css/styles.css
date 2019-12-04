@@ -41,6 +41,37 @@ h1
     color: silver;
 }
 
+#priceTable
+{
+    border-collapse: separate;
+    border-spacing: 20px;
+    text-align: left;
+    display: table;
+}
+
+td, th
+{
+    padding-left: 5px;
+    padding-right: 5px;
+    width:30px;
+    text-align: left;
+    display: table-cell;
+}
+
+#reportsContainer
+{
+    text-align: center;
+}
+
+#priceResults
+{
+    color:black;
+    text-align: left;
+    font-family: "Open Sans", sans-serif;
+    font-size: .5em;
+    display: inline-block;
+}
+
 #favLink
 {
     background-color: rgba(250,250,250,0.75);
@@ -117,7 +148,6 @@ h1
     width : 200px;
     display: inline-block;
     word-wrap: break-word;
-    
 }
 
 .itemPrice
