@@ -3,6 +3,18 @@ const request = require("request");
 const app = express();
 const tools = require("./tools.js");
 const session = require("express-session");
+const MySQLStore = require('express-mysql-session')(session);
+
+var options = {
+	
+	host: 'cst336final.mysql.database.azure.com',
+    port: 3306,
+    user: 'dbadmin@cst336final',
+    password: 'Otter2020!',
+    database: 'eStore',
+};
+
+var sessionStore = new MySQLStore(options);
 
 app.set('view engine', 'ejs');
 
@@ -11,7 +23,8 @@ app.use(session(
     {
         secret: "Z1BbyuR6LWG6Rehi9oxj",
         resave: true,
-        saveUninitialized: true
+        saveUninitialized: true,
+        store: sessionStore
     }));
 app.use(express.urlencoded({extended: true}));
 
@@ -162,7 +175,7 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
     {
         if (error) throw error;
         try
-            {
+        {
             connection.query(sql, sqlParams, function(err, results)
             {
                 if (err) throw err;
@@ -170,9 +183,9 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
             }); //query
         }
         catch(err)
-            {
-                console.log(err);
-            }
+        {
+            console.log(err);
+        }
         
         //handle errors during connection
         //eg 'PROTOCOL_CONNECTION_LOST'
@@ -201,6 +214,56 @@ app.get("/api/displayItems", tools.isAuthenticated, function(req, res)
     }); //connect
     
 }); //displayKeywords
+
+//send item count
+app.get("/api/getItemCount", tools.isAuthenticated, function(req, res)
+{
+    var connection = tools.createConnection();
+    var sql = "SELECT count(*) as 'total' FROM products"
+        + " UNION SELECT count(*) as 'activeTotal' from products WHERE status = 1"
+        + " UNION SELECT count(*) as 'inactiveTotal' from products WHERE status = 0";
+    connection.connect(function(error)
+    {
+        if (error) throw error;
+        try
+        {
+            connection.query(sql, function(err, results)
+            {
+                if (err) throw err;
+                res.send(results);
+            }); //query
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }); //connect
+}); //function
+
+//send prices
+app.get("/api/getPrices", tools.isAuthenticated, function(req, res)
+{
+    var connection = tools.createConnection();
+    var sql = "SELECT CONCAT('$', FORMAT(min(price),2)) as 'price' FROM products"
+        + " UNION SELECT CONCAT('$', FORMAT(max(price),2)) as 'price' FROM products"
+        + " UNION SELECT CONCAT('$', FORMAT(avg(price),2)) as 'price' FROM products";
+    connection.connect(function(error)
+    {
+        if (error) throw error;
+        try
+        {
+            connection.query(sql, function(err, results)
+            {
+                if (err) throw err;
+                res.send(results);
+            }); //query
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }); //connect
+}); //function
 
 //login submission route
 app.post("/login", async function(req, res)
@@ -234,7 +297,7 @@ app.post("/login", async function(req, res)
 }); //post login
 
 //server listener
-app.listen(process.env.PORT,process.env.IP, function()
+app.listen(process.env.PORT, process.env.IP, function()
 {
     console.log("Express server is running...");
 });
