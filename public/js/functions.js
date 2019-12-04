@@ -200,7 +200,7 @@ $(document).ready(function() {
           '<option value="' +
             element.keyword +
             '">' +
-            element.keyword +
+            element.keyword.toUpperCase() +
             '</option>'
         );
       });
