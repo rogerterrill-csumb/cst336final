@@ -190,4 +190,20 @@ $(document).ready(function() {
       }
     });
   });
+
+  $.ajax({
+    method: 'GET',
+    url: '/api/keywords',
+    success: function(result, status) {
+      result.forEach(function(element) {
+        $('#type').append(
+          '<option value="' +
+            element.keyword +
+            '">' +
+            element.keyword +
+            '</option>'
+        );
+      });
+    }
+  });
 }); //document ready

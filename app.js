@@ -186,8 +186,7 @@ app.get('/api/updateItems', tools.isAuthenticated, function(req, res) {
 }); //update items
 
 //display keyword route
-app.get('/displayKeywords', tools.isAuthenticated, async function(req, res) {
-  //var imageURLs = await tools.getRandomImages("",1);
+app.get('/displayKeywords', function(req, res) {
   var connection = tools.createConnection();
   var sql =
     'SELECT DISTINCT keyword FROM products WHERE status = 1 ORDER BY keyword';
@@ -197,6 +196,35 @@ app.get('/displayKeywords', tools.isAuthenticated, async function(req, res) {
     connection.query(sql, function(err, result) {
       if (err) throw err;
       res.render('selectedProducts', { rows: result });
+    }); //query
+
+    //handle errors during connection
+    //eg 'PROTOCOL_CONNECTION_LOST'
+    connection.on('error', function(err) {
+      console.log(err.code);
+    });
+
+    //handle errors for end of connection
+    //eg. ER_TOO_MANY_USER_CONNECTIONS:
+    connection.end(function(err) {
+      if (err) {
+        console.log(err.message);
+      }
+    });
+  }); //connect
+}); //displayKeywords
+
+//display keyword route
+app.get('/api/keywords', function(req, res) {
+  var connection = tools.createConnection();
+  var sql =
+    'SELECT DISTINCT keyword FROM products WHERE status = 1 ORDER BY keyword';
+
+  connection.connect(function(error) {
+    if (error) throw error;
+    connection.query(sql, function(err, results) {
+      if (err) throw err;
+      res.send(results);
     }); //query
 
     //handle errors during connection
