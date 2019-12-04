@@ -1,45 +1,45 @@
 /* global $ */
 
 $(document).ready(function() {
-  $(".favoriteIcon").on("click", function() {
+  $('.favoriteIcon').on('click', function() {
     var description = $(this)
       .parent()
       .parent()
-      .find("span:first")
+      .find('span:first')
       .text();
     var imageURL = $(this)
       .prev()
-      .attr("src");
+      .attr('src');
     var price = $(this)
       .parent()
-      .next("span")
+      .next('span')
       .text();
     var productID = $(this)
       .parent()
-      .next("span")
-      .next("span")
+      .next('span')
+      .next('span')
       .text();
 
-    if ($(this).attr("src") == "img/checkbox_empty.png") {
-      $(this).attr("src", "img/checkbox_full.png");
+    if ($(this).attr('src') == 'img/checkbox_empty.png') {
+      $(this).attr('src', 'img/checkbox_full.png');
       //console.log(description);
       updateProduct(
-        "add",
-        parseInt(productID.replace("(", "")),
+        'add',
+        parseInt(productID.replace('(', '')),
         imageURL,
         description,
-        parseFloat(price.replace("$", ""))
+        parseFloat(price.replace('$', ''))
       );
     } else {
-      $(this).attr("src", "img/checkbox_empty.png");
-      updateProduct("delete", parseInt(productID.replace("(", "")));
+      $(this).attr('src', 'img/checkbox_empty.png');
+      updateProduct('delete', parseInt(productID.replace('(', '')));
     }
   }); //favorite onClick
 
-  $(".keywordLink").on("click", function() {
+  $('.keywordLink').on('click', function() {
     $.ajax({
-      method: "GET",
-      url: "/api/displayItems",
+      method: 'GET',
+      url: '/api/displayItems',
       data: {
         keyword: $(this)
           .text()
@@ -47,67 +47,67 @@ $(document).ready(function() {
       },
       success: function(rows, status) {
         //clear the previous results
-        $("#favorites").html("");
+        $('#favorites').html('');
 
         //add favorite images
         rows.forEach(function(row, i) {
           //add BR every four images
           (i % 3 == 0) & (i != 0)
-            ? $("#favorites").append("<br>")
-            : $("#favorites").append("");
-          $("#favorites").append(
+            ? $('#favorites').append('<br>')
+            : $('#favorites').append('');
+          $('#favorites').append(
             "<div class='itemContainer'>" +
               "<span class=  'description' id='description'>" +
               row.description +
-              "</span>" +
+              '</span>' +
               "<div class = 'imageContainer'>" +
               "<img class= 'image' src='" +
               row.imageURL +
               "' width='200' height='200'>" +
               "<img class= 'favoriteIcon' src='img/checkbox_full.png'>" +
-              "</div>" +
+              '</div>' +
               "<span class= 'itemPrice' id='itemPrice'>&dollar;" +
               row.price +
-              "<br></span>" +
+              '<br></span>' +
               "<span class= 'productID' id='productID'>(" +
               row.productID +
-              ")</span>" +
-              "</div>"
+              ')</span>' +
+              '</div>'
           );
         });
 
         //add listener to dynamic content
-        $(".favoriteIcon").on("click", function() {
+        $('.favoriteIcon').on('click', function() {
           var description = $(this)
             .parent()
             .parent()
-            .find("span:first")
+            .find('span:first')
             .text();
           var imageURL = $(this)
             .prev()
-            .attr("src");
+            .attr('src');
           var price = $(this)
             .parent()
-            .next("span")
+            .next('span')
             .text();
           var productID = $(this)
             .parent()
-            .next("span")
-            .next("span")
+            .next('span')
+            .next('span')
             .text();
 
-          if ($(this).attr("src") == "img/checkbox_full.png") {
-            $(this).attr("src", "img/checkbox_empty.png");
-            console.log("pr: " + parseInt(productID.replace("(", "")));
-            updateProduct("delete", parseInt(productID.replace("(", "")));
+          if ($(this).attr('src') == 'img/checkbox_full.png') {
+            $(this).attr('src', 'img/checkbox_empty.png');
+            console.log('pr: ' + parseInt(productID.replace('(', '')));
+            updateProduct('delete', parseInt(productID.replace('(', '')));
           } else {
-            $(this).attr("src", "img/checkbox_full.png");
+            $(this).attr('src', 'img/checkbox_full.png');
             updateProduct(
-              "add",
-              parseInt(productID.replace("(", "")),
+              'add',
+              parseInt(productID.replace('(', '')),
               imageURL,
               description,
-              parseFloat(price.replace("$", ""))
+              parseFloat(price.replace('$', ''))
             );
           }
         }); //favorite onClick
@@ -117,39 +117,39 @@ $(document).ready(function() {
 
   function updateProduct(action, productID, imageURL, description, price) {
     $.ajax({
-      method: "GET",
-      url: "/api/updateItems",
+      method: 'GET',
+      url: '/api/updateItems',
       data: {
         productID: productID,
         imageURL: imageURL,
         description: description,
         price: price,
-        keyword: $("#keyword").val(),
+        keyword: $('#keyword').val(),
         action: action
       }
     });
   }
 
-  $("#searchBtn").on("click", function() {
-    $("#searchContainer").empty();
+  $('#searchBtn').on('click', function() {
+    $('#searchContainer').empty();
     $.ajax({
-      method: "GET",
-      url: "/api/displaySearchItems",
+      method: 'GET',
+      url: '/api/displaySearchItems',
       data: {
-        keyword: $("#type").val(),
-        pricefrom: $("#pricefrom").val(),
-        priceto: $("#priceto").val(),
-        description: $("#description").val(),
+        keyword: $('#type').val(),
+        pricefrom: $('#pricefrom').val(),
+        priceto: $('#priceto').val(),
+        description: $('#description').val()
       },
       success: function(rows, status) {
         if (rows.length == 0) {
-          $("#searchContainer").append(`<h1>Sorry there are no results</h1>`);
+          $('#searchContainer').append(`<h1>Sorry there are no results</h1>`);
         } else {
           rows.forEach(function(item, i) {
             if (i % 4 == 0) {
-              $("#searchContainer").append(`<br>`);
+              $('#searchContainer').append(`<br>`);
             }
-            $("#searchContainer").append(`<div class="itemContainer">
+            $('#searchContainer').append(`<div class="itemContainer">
           <form>
             <input type="hidden" name="product_id" value="${item.productID}" />
             <input type="hidden" name="imageurl" value="${item.imageURL}" />
@@ -166,12 +166,28 @@ $(document).ready(function() {
         </div>
       `);
           });
-          $('.add-to-cart').on("click", function() {
-            console.log($(this).parentNode.defaultValue().text());
-        })
+          $('.add-to-cart').on('click', function() {
+            let currentItem = $(this)
+              .parent()
+              .children();
+            let id = $(currentItem[0]).val();
+            let imageURL = $(currentItem[1]).val();
+            let description = $(currentItem[2]).val();
+            let price = $(currentItem[3]).val();
+
+            $.ajax({
+              method: 'GET',
+              url: '/cart',
+              data: {
+                id: id,
+                imageURL: imageURL,
+                description: description,
+                price: price
+              }
+            });
+          });
         }
       }
     });
   });
-
 }); //document ready

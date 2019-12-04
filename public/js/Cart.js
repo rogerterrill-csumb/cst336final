@@ -2,14 +2,20 @@
 
 class Cart{
 
-    static _addToCart(product = null, qty = 1, cart){
+    static _addToCart(product = null, cart){
+        let index = this._inCart(product, cart);
+        if(index != -1){
+            cart.items[index].qty += 1;
+        } else {
         let item = {
             id: product.id,
             imageURL: product.imageURL,
             description: product.description,
-            price: product.price
+            price: product.price,
+            qty: product.qty,
         }
         cart.items.push(item);
+        }
     }
 
     static _removeFromCart(){
@@ -20,8 +26,9 @@ class Cart{
 
     }
 
-    static _inCart(){
-
+    static _inCart(item, cart){
+        const id = element => element.id == item.id;
+        return cart.items.findIndex(id);
     }
 
     static _calculateTotal(){
