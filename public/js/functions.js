@@ -150,8 +150,8 @@ $(document).ready(function() {
               $("#searchContainer").append(`<br>`);
             }
             $("#searchContainer").append(`<div class="itemContainer">
-          <form action="/cart" method="POST">
-            <input type="hidden" name="product_id" value="${item.productID} />
+          <form>
+            <input type="hidden" name="product_id" value="${item.productID}" />
             <input type="hidden" name="imageurl" value="${item.imageURL}" />
             <input type="hidden" name="description" value="${item.description}" />
             <input type="hidden" name="price" value="${item.price}" />
@@ -159,17 +159,19 @@ $(document).ready(function() {
             <div class="imageContainer">
               <img class="image" src="${item.imageURL}" width="200" height="200" />
             </div>
-            <span class="itemPrice" id="itemPrice"
-              >&dollar;${item.price}<br
-            /></span>
+            <span class="itemPrice" id="itemPrice">&dollar;${item.price}<br/></span>
             <br />
-            <button type="button">Add To Cart</button>
+            <button type="button" class="add-to-cart">Add To Cart</button>
           </form>
         </div>
       `);
           });
+          $('.add-to-cart').on("click", function() {
+            console.log($(this).parentNode.defaultValue().text());
+        })
         }
       }
     });
   });
+
 }); //document ready
