@@ -158,6 +158,31 @@ function getPrices()
         
 } //getPrices
 
+function getOrders()
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/getOrders",
+        data:   {
+                },
+        success: function(result, status)
+        {
+            //clear the results and start table
+            $("#orderResults").html("<table id=‘orderTable’>");
+            $("#orderResults").append("<tr><th>Order Number</th><th>Invoice Total</th></tr>");
+            result.forEach(function(row, i)
+            {
+                //show order totals
+                $("#orderResults").append("<tr><td>" + result[i].orderNumber
+                    + "</td><td>" + result[i].invoiceTotal + "</td></tr>");
+            });
+             //end table
+            $("#orderResults").append("</table>");
+        }
+    });
+}//getOrders
+
 function lookupItem()
 {
     $.ajax(
