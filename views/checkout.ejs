@@ -5,7 +5,12 @@
   <h1>
     Checkout
   </h1>
+  <h3><%= new Date() %></h3>
   <br />
+
+    <% if(items.length == 0 ) { %>
+        <h2>Your Shopping Cart is Empty</h2>
+    <% }else{ %>
   <table>
     <tr>
       <th>Product ID</th>
@@ -71,7 +76,8 @@
       <td>$<%=parseFloat(subtotal * 1.0775).toFixed(2)%></td>
     </tr>
   </table>
-  <button>Submit Order</button>
+  <button id="submitBtn">Submit Order</button>
+  <% } %>
 </main>
 
 <%- include('partials/footer.ejs') %>

@@ -24,9 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', function(req, res) {
   if (!req.session.cart) {
     req.session.cart = {
-      items: [],
-      totals: 0.0,
-      formattedTotals: ''
+      items: []
     };
   }
   res.render('index.ejs');
@@ -73,7 +71,6 @@ app.get('/shop', async function(req, res) {
 
 app.get('/checkout', function(req, res){
   let items = req.session.cart.items;
-  console.log("Checkout ", items);
   res.render('checkout.ejs', {items: items});
 })
 
@@ -97,6 +94,41 @@ app.get('/checkoutremove', function(req, res){
   res.send("Successfully Removed Item");
 })
 
+app.get('/checkoutsubmit', function(req, res){
+  let connection = tools.createConnection();
+  let cart = req.session.cart;
+  let orderDate = Cart._formatTime(new Date());
+  let orderID;
+  
+  let sql = 'INSERT INTO orders (userID, order_Date) OUTPUT INSERTED.* INTO orders VALUES (?,?)';
+  let sqlParams = [4, orderDate];
+
+  connection.connect(function(error) {
+    if (error) throw error;
+    connection.query(sql, sqlParams, function(err, result) {
+      if (error) throw err;
+      console.log(result);
+    }); //query
+
+    //handle errors during connection
+    //eg 'PROTOCOL_CONNECTION_LOST'
+    connection.on('error', function(err) {
+      console.log(err.code);
+    });
+
+    //handle errors for end of connection
+    //eg. ER_TOO_MANY_USER_CONNECTIONS:
+    connection.end(function(err) {
+      if (err) {
+        console.log(err.message);
+      }
+    });
+  }); //connect
+
+  Cart._emptyCart(cart);
+  res.send("Successfully emptied cart");
+})
+
 
 // Post to cart
 app.get('/cart', function(req, res) {
@@ -111,7 +143,7 @@ app.get('/cart', function(req, res) {
   let cart = req.session.cart;
 
   Cart._addToCart(prod, cart);
-  console.log(prod, cart);
+  // console.log(prod, cart);
   res.redirect('/shop');
 });
 

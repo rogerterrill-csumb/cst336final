@@ -216,22 +216,30 @@ $(document).ready(function() {
 
   $(".removeBtn").on("click", function() {
     let id = parseInt(
-        $(this)
-          .parent()
-          .prev()
-          .prev()
-          .prev()
-          .prev()
-          .prev()
-          .text()
-      );
-      $.ajax({
-        method: "GET",
-        url: "/checkoutremove",
-        data: { id }
-      });
-      location.reload(true);
+      $(this)
+        .parent()
+        .prev()
+        .prev()
+        .prev()
+        .prev()
+        .prev()
+        .text()
+    );
+    $.ajax({
+      method: "GET",
+      url: "/checkoutremove",
+      data: { id }
     });
+    location.reload(true);
+  });
+
+  $("#submitBtn").on("click", function() {
+    $.ajax({
+      method: "GET",
+      url: "/checkoutsubmit"
+    });
+    location.reload(true);
+  });
 
   $.ajax({
     method: "GET",

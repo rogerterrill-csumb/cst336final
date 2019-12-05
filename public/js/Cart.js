@@ -31,13 +31,13 @@ class Cart {
     return cart.items.findIndex(id);
   }
 
-  static _calculateTotal(cart) {
-    cart.items.reduce();
+  static _emptyCart(cart) {
+      cart.items = [];
   }
 
-  static emptyCart() {}
-
-  static setFormatTotals() {}
+  static _formatTime(date){
+      return `${date.getFullYear()}-${('0' + (date.getMonth()+1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}`
+  }
 }
 
 module.exports = Cart;
