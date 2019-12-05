@@ -98,7 +98,7 @@ $(document).ready(function()
             
         });
     }
-   
+    
 }); //document ready
 
 function getItemCount()
@@ -156,4 +156,45 @@ function getPrices()
         }
     });
         
-} //getItemCount
+} //getPrices
+
+function lookupItem()
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/lookupItem",
+        data:   {
+                    "productID": $("#productID").val()
+                },
+        success: function(result, status)
+        {
+            //clear the results and start table
+            $("#lookupResults").html("");
+            $("#lookupResults").append(result[0].description + "<br>"
+                + "<img src='" + result[0].imageURL + "' alt='image'><br>"
+                + "<form><input type='text' placeholder='" + result[0].keyword
+                + "' name='keyword' id='keyword'><button name='update' onclick='updateItem(`" 
+                + result[0].productID + "`)' id='update'>Update</button></form>"
+            )
+
+        }
+    });
+        
+} //lookupItem
+
+function updateItem(productID)
+    {
+        
+        $.ajax(
+        {
+            method: "GET",
+            url:    "/api/updateItems",
+            data:   {
+                        "productID": productID,
+                        "keyword": document.getElementById('keyword').value,
+                        "action": "updateItem"
+                    },
+            
+        });
+    }

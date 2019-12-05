@@ -1,0 +1,25 @@
+<%- include('partials/header.ejs') %>
+
+    <br>
+    <main>
+        <h1>
+            Product Update
+        </h1>
+        <%- include('partials/adminNav.ejs') %>
+    </main>
+    
+    <div>
+        <form action="javascript:lookupItem()">
+            <input type="text" size="15" placeholder="Enter product ID" name="productID" id="productID">
+            <button>
+                Search
+            </button>
+        </form>
+    </div>
+    <br>
+    <div id="lookupResults">
+            
+            
+    </div>
+
+<%- include('partials/footer.ejs') %>
