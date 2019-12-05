@@ -82,127 +82,137 @@ $(document).ready(function()
     }); //keywordLink onClick
     
     $('#searchBtn').on('click', function() {
-    $('#searchContainer').empty();
+      $('#searchContainer').empty();
+      $.ajax({
+        method: 'GET',
+        url: '/api/displaySearchItems',
+        data: {
+          keyword: $('#type').val(),
+          pricefrom: $('#pricefrom').val(),
+          priceto: $('#priceto').val(),
+          description: $('#description').val()
+        },
+        success: function(rows, status) {
+          if (rows.length == 0) {
+            $('#searchContainer').append(`<h1>Sorry there are no results</h1>`);
+          } else {
+            rows.forEach(function(item, i) {
+              if (i % 4 == 0) {
+                $('#searchContainer').append(`<br>`);
+              }
+              $('#searchContainer').append(`<div class="itemContainer">
+                <form>
+                  <input type="hidden" name="product_id" value="${item.productID}" />
+                  <input type="hidden" name="imageurl" value="${item.imageURL}" />
+                  <input type="hidden" name="description" value="${item.description}" />
+                  <input type="hidden" name="price" value="${item.price}" />
+                  <span class="description" id="description">${item.description}</span>
+                  <div class="imageContainer">
+                    <img class="image" src="${item.imageURL}" width="200" height="200" />
+                  </div>
+                  <span class="itemPrice" id="itemPrice">&dollar;${item.price}<br/></span>
+                  <br />
+                  <button type="button" class="add-to-cart">Add To Cart</button>
+                </form>
+              </div>
+            `);
+            });
+            $('.add-to-cart').on('click', function() {
+              let currentItem = $(this)
+                .parent()
+                .children();
+              let id = $(currentItem[0]).val();
+              let imageURL = $(currentItem[1]).val();
+              let description = $(currentItem[2]).val();
+              let price = $(currentItem[3]).val();
+  
+              $.ajax({
+                method: 'GET',
+                url: '/cart',
+                data: {
+                  id: id,
+                  imageURL: imageURL,
+                  description: description,
+                  price: price
+                }
+              });
+            });
+          }
+        }
+      });
+    });
+  
+    $('.updateBtn').on('click', function() {
+      let newQty = $(this)
+        .parent()
+        .prev()
+        .find('input')
+        .val();
+      let id = parseInt(
+        $(this)
+          .parent()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .text()
+      );
+      $.ajax({
+        method: 'GET',
+        url: '/checkoutupdate',
+        data: { id, newQty },
+        success: function() {
+          location.reload(true);
+        }
+      });
+    });
+  
+    $('.removeBtn').on('click', function() {
+      let id = parseInt(
+        $(this)
+          .parent()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .text()
+      );
+      $.ajax({
+        method: 'GET',
+        url: '/checkoutremove',
+        data: { id },
+        success: function() {
+          location.reload(true);
+        }
+      });
+    });
+  
+    $('#submitBtn').on('click', function() {
+      $.ajax({
+        method: 'GET',
+        url: '/checkoutsubmit',
+        success: function() {
+          location.reload(true);
+        }
+      });
+    });
+  
     $.ajax({
       method: 'GET',
-      url: '/api/displaySearchItems',
-      data: {
-        keyword: $('#type').val(),
-        pricefrom: $('#pricefrom').val(),
-        priceto: $('#priceto').val(),
-        description: $('#description').val()
-      },
-      success: function(rows, status) {
-        if (rows.length == 0) {
-          $('#searchContainer').append(`<h1>Sorry there are no results</h1>`);
-        } else {
-          rows.forEach(function(item, i) {
-            if (i % 4 == 0) {
-              $('#searchContainer').append(`<br>`);
-            }
-            $('#searchContainer').append(`<div class="itemContainer">
-              <form>
-                <input type="hidden" name="product_id" value="${item.productID}" />
-                <input type="hidden" name="imageurl" value="${item.imageURL}" />
-                <input type="hidden" name="description" value="${item.description}" />
-                <input type="hidden" name="price" value="${item.price}" />
-                <span class="description" id="description">${item.description}</span>
-                <div class="imageContainer">
-                  <img class="image" src="${item.imageURL}" width="200" height="200" />
-                </div>
-                <span class="itemPrice" id="itemPrice">&dollar;${item.price}<br/></span>
-                <br />
-                <button type="button" class="add-to-cart">Add To Cart</button>
-              </form>
-            </div>
-          `);
-          });
-          $('.add-to-cart').on('click', function() {
-            let currentItem = $(this)
-              .parent()
-              .children();
-            let id = $(currentItem[0]).val();
-            let imageURL = $(currentItem[1]).val();
-            let description = $(currentItem[2]).val();
-            let price = $(currentItem[3]).val();
-            $.ajax({
-              method: 'GET',
-              url: '/cart',
-              data: {
-                id: id,
-                imageURL: imageURL,
-                description: description,
-                price: price
-              }
-            });
-          });
-        }
+      url: '/api/keywords',
+      success: function(result, status) {
+        result.forEach(function(element) {
+          $('#type').append(
+            '<option value="' +
+              element.keyword +
+              '">' +
+              element.keyword.toUpperCase() +
+              '</option>'
+          );
+        });
       }
     });
-  });
-  
-  $('.updateBtn').on('click', function() {
-    let newQty = $(this)
-      .parent()
-      .prev()
-      .find('input')
-      .val();
-    let id = parseInt(
-      $(this)
-        .parent()
-        .prev()
-        .prev()
-        .prev()
-        .prev()
-        .text()
-    );
-    $.ajax({
-      method: 'GET',
-      url: '/checkoutupdate',
-      data: { id, newQty }
-    });
-    location.reload(true);
-  });
-  $('.removeBtn').on('click', function() {
-    let id = parseInt(
-      $(this)
-        .parent()
-        .prev()
-        .prev()
-        .prev()
-        .prev()
-        .prev()
-        .text()
-    );
-    $.ajax({
-      method: 'GET',
-      url: '/checkoutremove',
-      data: { id }
-    });
-    location.reload(true);
-  });
-  $('#submitBtn').on('click', function() {
-    $.ajax({
-      method: 'GET',
-      url: '/checkoutsubmit'
-    });
-    location.reload(true);
-  });
-  $.ajax({
-    method: 'GET',
-    url: '/api/keywords',
-    success: function(result, status) {
-      result.forEach(function(element) {
-        $('#type').append(
-          '<option value="' +
-            element.keyword +
-            '">' +
-            element.keyword.toUpperCase() +
-            '</option>'
-        );
-      });
-    }
-  });
     
     function updateProduct(action, productID, imageURL, description, price)
     {

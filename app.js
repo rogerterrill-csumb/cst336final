@@ -21,12 +21,12 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"));
 app.use(session(
     {
-        secret: "Z1BbyuR6LWG6Rehi9oxj",
-        resave: true,
-        saveUninitialized: true,
-        store: sessionStore,
-        cookie: { maxAge: 180000 }
-    }));
+    secret: "Z1BbyuR6LWG6Rehi9oxj",
+    resave: true,
+    saveUninitialized: true,
+    store: sessionStore,
+    cookie: { maxAge: 180000 }
+  }));
 app.use(express.urlencoded({extended: true}));
 
 
@@ -97,9 +97,7 @@ app.get('/checkoutupdate', function(req, res) {
   let cart = req.session.cart;
 
   Cart._updateCart(id, newQty, cart);
-
-  console.log(id);
-  res.send('Successfully Updated quantity!');
+  res.redirect('/checkout');
 });
 
 app.get('/checkoutremove', function(req, res) {
@@ -107,8 +105,7 @@ app.get('/checkoutremove', function(req, res) {
   let cart = req.session.cart;
 
   Cart._removeFromCart(id, cart);
-
-  res.send('Successfully Removed Item');
+  res.redirect('/checkout');;
 });
 
 app.get('/checkoutsubmit', function(req, res) {
