@@ -70,6 +70,25 @@ module.exports =
  
         return connection;
     }, //createConnection
+
+     /**Get only items in our DB
+   * @return array with items
+   */
+
+  getDBItems: function() {
+    let sql = 'SELECT * FROM products';
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
     
     /**check for valid username
      * @param string username
