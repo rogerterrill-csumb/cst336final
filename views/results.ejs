@@ -1,12 +1,13 @@
 <%- include('partials/header.ejs') %>
-
+    <main>
+        <%- include('partials/adminNav.ejs') %>
+    </main>
     <form action="/search">
         <input type="text" size="10" placeholder="Type keyword" name="keyword" id ="keyword" value = "<%=keyword%>" >
         <button>
             Search
         </button>
-        <a href="/displayKeywords" id="favLink">View Selected Items</a>
-        <a href="/admin" id="favLink">Administration</a>
+        
     </form>
     <br>
     

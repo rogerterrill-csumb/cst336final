@@ -198,7 +198,7 @@ function lookupItem()
             $("#lookupResults").html("");
             $("#lookupResults").append(result[0].description + "<br>"
                 + "<img src='" + result[0].imageURL + "' alt='image'><br>"
-                + "<form><input type='text' placeholder='" + result[0].keyword
+                + "<form><input type='text' value='" + result[0].keyword
                 + "' name='keyword' id='keyword'><button name='update' onclick='updateItem(`" 
                 + result[0].productID + "`)' id='update'>Update</button></form>"
             )
