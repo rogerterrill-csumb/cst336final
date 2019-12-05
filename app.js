@@ -25,22 +25,10 @@ app.use(session(
         resave: true,
         saveUninitialized: true,
         store: sessionStore,
-        cookie: { maxAge: 1800000 }
+        cookie: { maxAge: 180000 }
     }));
 app.use(express.urlencoded({extended: true}));
 
-app.use(express.static('public'));
-app.use(
-  session({
-    secret: 'Z1BbyuR6LWG6Rehi9oxj',
-    resave: true,
-    saveUninitialized: true,
-    store: sessionStore,
-    cookie: { maxAge: 60000 }
-  })
-);
-
-app.use(express.urlencoded({ extended: true }));
 
 //ROUTES
 
