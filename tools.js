@@ -48,7 +48,7 @@ module.exports =
                 }
             }); //request
         }); //promise
-    }, //function getRandomImages
+    }, //function getItems
     
     //function to connect to database
     createConnection: function()

@@ -280,6 +280,29 @@ app.get("/api/getPrices", tools.isAuthenticated, function(req, res)
     }); //connect
 }); //function
 
+//send orders
+app.get("/api/getOrders", tools.isAuthenticated, function(req, res)
+{
+    var connection = tools.createConnection();
+    var sql = "SELECT IFNULL(orderID, 'TOTAL') as 'orderNumber', CONCAT('$', FORMAT(SUM(total_price),2)) as 'invoiceTotal' "+
+    "FROM `line items` GROUP BY orderID WITH ROLLUP";
+    connection.connect(function(error)
+    {
+        if (error) throw error;
+        try
+        {
+            connection.query(sql, function(err, results)
+            {
+                if (err) throw err;
+                res.send(results);
+            }); //query
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }); //connect
+}); //function
 
 // lookup single item for editing
 app.get("/api/lookupItem", tools.isAuthenticated, async function(req, res)
