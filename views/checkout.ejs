@@ -1,0 +1,83 @@
+<%- include('partials/header.ejs') %>
+
+<br />
+<main>
+  <h1>
+    Checkout
+  </h1>
+  <h3><%= new Date() %></h3>
+  <br />
+
+    <% if(items.length == 0 ) { %>
+        <h2>Your Shopping Cart is Empty</h2>
+    <% }else{ %>
+  <table>
+    <tr>
+      <th>Product ID</th>
+      <th>Image</th>
+      <th>Description</th>
+      <th>Quantity</th>
+      <th></th>
+      <th></th>
+      <th>Unit Price</th>
+      <th>Sub Total</th>
+      <th></th>
+      <th></th>
+    </tr>
+    
+    <% let subtotal = 0; 
+        let tax = 0; 
+        let total = 0 %>
+    <% items.forEach(function(item, i) { %>
+
+    <tr>
+      <td><%=item.id%></td>
+      <td>
+        <img class="image" src="<%=item.imageURL%>" width="200" height="200" />
+      </td>
+      <td><%=item.description%></td>
+      <td><input class="qty" type="number" value="<%=item.qty%>" /></td>
+      <td><button class="updateBtn">Update</button></td>
+      <td><button class="removeBtn">Remove</button></td>
+      <td><%=parseFloat(item.price).toFixed(2)%></td>
+      <td><%=parseFloat(item.price*item.qty).toFixed(2)%></td>
+      <% subtotal = subtotal + (item.price*item.qty)%>
+
+      <% }); %>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>SubTotal:</td>
+      <td>$<%=parseFloat(subtotal).toFixed(2)%></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>Tax:</td>
+      <td>$<%=parseFloat(subtotal * 0.0775).toFixed(2)%></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>Total:</td>
+      <td>$<%=parseFloat(subtotal * 1.0775).toFixed(2)%></td>
+    </tr>
+  </table>
+  <button id="submitBtn">Submit Order</button>
+  <% } %>
+</main>
+
+<%- include('partials/footer.ejs') %>
