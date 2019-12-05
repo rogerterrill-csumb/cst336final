@@ -98,18 +98,38 @@ app.get('/checkoutsubmit', function(req, res){
   let connection = tools.createConnection();
   let cart = req.session.cart;
   let orderDate = Cart._formatTime(new Date());
-  let orderID;
-  
-  let sql = 'INSERT INTO orders (userID, order_Date) OUTPUT INSERTED.* INTO orders VALUES (?,?)';
+
+  let sql = 'INSERT INTO orders (userID, order_Date) VALUES (?,?)';
+  let sql2 = 'SET @orderIDFromOrders = LAST_INSERT_ID()';
+  let sql3 = 'INSERT INTO `line items` (orderID, line_item_sequence, productID, total_price, item_description) VALUES (@orderIDfromOrders,?,?,?,?);';
   let sqlParams = [4, orderDate];
+  let sqlParams2 = ['2', '100291336', '18.69', 'sandr']
 
   connection.connect(function(error) {
+    
     if (error) throw error;
     connection.query(sql, sqlParams, function(err, result) {
       if (error) throw err;
-      console.log(result);
     }); //query
+    //handle errors during connection
+    //eg 'PROTOCOL_CONNECTION_LOST'
+    connection.on('error', function(err) {
+      console.log(err.code);
+    });
 
+    connection.query(sql2, function(err, result) {
+      if (error) throw err;
+    }); //query
+    //handle errors during connection
+    //eg 'PROTOCOL_CONNECTION_LOST'
+    connection.on('error', function(err) {
+      console.log(err.code);
+    });
+
+    connection.query(sql3, sqlParams2, function(err, result) {
+      if (error) throw err;
+    
+    }); //query
     //handle errors during connection
     //eg 'PROTOCOL_CONNECTION_LOST'
     connection.on('error', function(err) {
@@ -125,6 +145,7 @@ app.get('/checkoutsubmit', function(req, res){
     });
   }); //connect
 
+  console.log("The ORDER ID IS");
   Cart._emptyCart(cart);
   res.send("Successfully emptied cart");
 })
