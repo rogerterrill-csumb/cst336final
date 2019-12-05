@@ -5,14 +5,14 @@ const tools = require("./tools.js");
 const session = require("express-session");
 const MySQLStore = require('express-mysql-session')(session);
 
-var options = {
-	
-	host: 'cst336final.mysql.database.azure.com',
-    port: 3306,
-    user: 'dbadmin@cst336final',
-    password: 'Otter2020!',
-    database: 'eStore',
-};
+var options = 
+    {
+    	host: 'cst336final.mysql.database.azure.com',
+        port: 3306,
+        user: 'dbadmin@cst336final',
+        password: 'Otter2020!',
+        database: 'eStore',
+    };
 
 var sessionStore = new MySQLStore(options);
 
@@ -24,7 +24,8 @@ app.use(session(
         secret: "Z1BbyuR6LWG6Rehi9oxj",
         resave: true,
         saveUninitialized: true,
-        store: sessionStore
+        store: sessionStore,
+        cookie: { maxAge: 60000 }
     }));
 app.use(express.urlencoded({extended: true}));
 
@@ -61,6 +62,12 @@ app.get("/productSearch", tools.isAuthenticated, function(req,res)
     res.render("productSearch.ejs");
 });
 
+//product search route
+app.get("/productUpdate", tools.isAuthenticated, function(req,res)
+{
+    res.render("productUpdate.ejs");
+});
+
 //keyword search route
 app.get("/search", tools.isAuthenticated, async function(req,res)
 {
@@ -77,11 +84,11 @@ app.get("/search", tools.isAuthenticated, async function(req,res)
 
 }); //search
 
-//update database route
+//add or update database items
 app.get("/api/updateItems", tools.isAuthenticated, function(req, res)
 {
     var connection = tools.createConnection();
-    
+    //console.log("action:" + req.query.action);
     if(req.query.action == "add")
     {
         var sql = "INSERT INTO products(productID, imageURL, description, price,"
@@ -89,6 +96,11 @@ app.get("/api/updateItems", tools.isAuthenticated, function(req, res)
         
         //console.log("pr" + req.query.productID);
         var sqlParams = [req.query.productID, req.query.imageURL,req.query.description,req.query.price, req.query.keyword];
+    }
+    else if(req.query.action == "updateItem")
+    {
+        var sql = "UPDATE products SET keyword = ? WHERE productID = ?";
+        var sqlParams = [req.query.keyword,req.query.productID];
     }
     else
     {
@@ -244,6 +256,7 @@ app.get("/api/getItemCount", tools.isAuthenticated, function(req, res)
 app.get("/api/getPrices", tools.isAuthenticated, function(req, res)
 {
     var connection = tools.createConnection();
+    
     var sql = "SELECT IFNULL(`keyword`,'TOTAL') as 'Category', CONCAT('$', FORMAT(min(price),2)) as 'Minimum', " 
         + "COUNT(keyword) as 'Count', CONCAT('$', FORMAT(max(price),2)) as 'Maximum', "
         + "CONCAT('$', FORMAT(avg(price),2)) as 'Average' FROM products WHERE status = 1 "
@@ -267,6 +280,33 @@ app.get("/api/getPrices", tools.isAuthenticated, function(req, res)
     }); //connect
 }); //function
 
+
+// lookup single item for editing
+app.get("/api/lookupItem", tools.isAuthenticated, async function(req, res)
+{
+    var connection = tools.createConnection();
+    var sqlParams = [req.query.productID];
+    var sql = "SELECT productID, description, imageURL, keyword FROM products WHERE productID = ?";
+        
+    connection.connect(function(error)
+    {
+        if (error) throw error;
+        try
+        {
+            connection.query(sql, sqlParams, function(err, results)
+            {
+                if (err) throw err;
+                //console.log(results);
+                res.send(results);
+            }); //query
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }); //connect
+}); //lookup item
+
 //login submission route
 app.post("/login", async function(req, res)
 {
@@ -274,7 +314,7 @@ app.post("/login", async function(req, res)
     let password = req.body.password;
     
     let result = await tools.checkUsername(username);
-    console.dir(result);
+    //console.dir(result);
     let hashedPassword = "";
     
     if(result.length > 0)
@@ -283,7 +323,7 @@ app.post("/login", async function(req, res)
     }
     
     let passwordMatch = await tools.checkPassword(password, hashedPassword);
-    console.log("Password match:" + passwordMatch);
+    //console.log("Password match:" + passwordMatch);
     
     if(passwordMatch)
     {

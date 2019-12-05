@@ -98,7 +98,7 @@ $(document).ready(function()
             
         });
     }
-   
+    
 }); //document ready
 
 function getItemCount()
@@ -112,10 +112,15 @@ function getItemCount()
         success: function(result, status)
         {
             //clear the results and start table
-            $("#totalResults").html("");
+            $("#totalResults").html("<table>");
             
             //show totals
-            $("#totalResults").append("Total: " + result[0].total + "<br>Active: " + result[1].total +"<br>Inactive: " + result[2].total);
+            $("#totalResults").append("<table><tr><th>Total Products in Store:</th><td id='right'>" + result[0].total 
+                + "</td></tr><tr><th>Active Products:</th><td id='right'>" + result[1].total
+                + "</td></tr><tr><th>Inactive Products:</th><td id='right'>" + result[2].total + "</td></tr>");
+                
+             //end table
+            $("#totalResults").append("</table>");
         }
     });
         
@@ -140,8 +145,8 @@ function getPrices()
             {
                 //show totals
                 $("#priceResults").append("<tr><td>" + result[i].Category
-                    + "</td><td>" + result[i].Count + "</td><td>" + result[i].Minimum
-                    + "</td><td>" + result[i].Maximum + "</td><td>" + result[i].Average
+                    + "</td><td id='right'>" + result[i].Count + "</td><td id='right'>" + result[i].Minimum
+                    + "</td><td id='right'>" + result[i].Maximum + "</td><td id='right'>" + result[i].Average
                     + "</td></tr>");
             });
             
@@ -151,4 +156,45 @@ function getPrices()
         }
     });
         
-} //getItemCount
+} //getPrices
+
+function lookupItem()
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/lookupItem",
+        data:   {
+                    "productID": $("#productID").val()
+                },
+        success: function(result, status)
+        {
+            //clear the results and start table
+            $("#lookupResults").html("");
+            $("#lookupResults").append(result[0].description + "<br>"
+                + "<img src='" + result[0].imageURL + "' alt='image'><br>"
+                + "<form><input type='text' placeholder='" + result[0].keyword
+                + "' name='keyword' id='keyword'><button name='update' onclick='updateItem(`" 
+                + result[0].productID + "`)' id='update'>Update</button></form>"
+            )
+
+        }
+    });
+        
+} //lookupItem
+
+function updateItem(productID)
+    {
+        
+        $.ajax(
+        {
+            method: "GET",
+            url:    "/api/updateItems",
+            data:   {
+                        "productID": productID,
+                        "keyword": document.getElementById('keyword').value,
+                        "action": "updateItem"
+                    },
+            
+        });
+    }

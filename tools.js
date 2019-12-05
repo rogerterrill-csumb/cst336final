@@ -114,7 +114,7 @@ module.exports =
             }); // compare
         }); // promise
     },
-    
+   
     /**check for session authentication 
      * @param string req
      * @param string res
