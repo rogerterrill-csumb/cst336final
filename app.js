@@ -97,13 +97,18 @@ app.get('/checkoutremove', function(req, res){
 app.get('/checkoutsubmit', function(req, res){
   let connection = tools.createConnection();
   let cart = req.session.cart;
+  let items = req.session.cart.items;
+  items.forEach(item =>{
+    item.orderid = '@orderIDfromOrders';
+  }) 
+  console.log(items);
   let orderDate = Cart._formatTime(new Date());
 
   let sql = 'INSERT INTO orders (userID, order_Date) VALUES (?,?)';
-  let sql2 = 'SET @orderIDFromOrders = LAST_INSERT_ID()';
-  let sql3 = 'INSERT INTO `line items` (orderID, line_item_sequence, productID, total_price, item_description) VALUES (@orderIDfromOrders,?,?,?,?);';
+  let sql2 = 'SET @orderIDFromOrders = "37"';
+  let sql3 = 'INSERT INTO `line items` (orderID, line_item_sequence, productID, total_price, item_description) VALUES ?';
   let sqlParams = [4, orderDate];
-  let sqlParams2 = ['2', '100291336', '18.69', 'sandr']
+  let sqlParams2 = [['@orderIDFromOrders','1', '100291336', '18.69', 'sasdf'], ['@orderIDFromOrders','2', '100291336', '18.69', 'adsfasd'], ['@orderIDFromOrders','3', '100291336', '18.69', 'adsfasdf']];
 
   connection.connect(function(error) {
     
@@ -111,12 +116,9 @@ app.get('/checkoutsubmit', function(req, res){
     connection.query(sql, sqlParams, function(err, result) {
       if (error) throw err;
     }); //query
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
     connection.on('error', function(err) {
       console.log(err.code);
     });
-
     connection.query(sql2, function(err, result) {
       if (error) throw err;
     }); //query
@@ -126,7 +128,7 @@ app.get('/checkoutsubmit', function(req, res){
       console.log(err.code);
     });
 
-    connection.query(sql3, sqlParams2, function(err, result) {
+    connection.query(sql3, [sqlParams2], function(err, result) {
       if (error) throw err;
     
     }); //query
@@ -145,7 +147,6 @@ app.get('/checkoutsubmit', function(req, res){
     });
   }); //connect
 
-  console.log("The ORDER ID IS");
   Cart._emptyCart(cart);
   res.send("Successfully emptied cart");
 })
