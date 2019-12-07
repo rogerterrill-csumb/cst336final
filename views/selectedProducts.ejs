@@ -1,12 +1,10 @@
 <%- include('partials/header.ejs') %>
 
-
-        
         <div id = "favTitleBar"
             <h1 id="favHeader">
                 Selected Items
             </h1>
-            <br>
+            <%- include('partials/adminNav.ejs') %>
             <% rows.forEach(function(row,i) { 
             
                 if(i!=0)
@@ -17,10 +15,7 @@
                 
                 <a class="keywordLink"><%= row['keyword'] %></a>
             <% }) %>
-            <br>
-            <a href="/productSearch" id="searchLink">Back to Search</a>
         </div>
-        
         <hr>
         <div id="favorites"></div>
 

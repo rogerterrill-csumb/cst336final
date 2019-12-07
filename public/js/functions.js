@@ -79,7 +79,140 @@ $(document).ready(function()
                     }
         });
         
-    }); //keywordLink onClick 
+    }); //keywordLink onClick
+    
+    $('#searchBtn').on('click', function() {
+      $('#searchContainer').empty();
+      $.ajax({
+        method: 'GET',
+        url: '/api/displaySearchItems',
+        data: {
+          keyword: $('#type').val(),
+          pricefrom: $('#pricefrom').val(),
+          priceto: $('#priceto').val(),
+          description: $('#description').val()
+        },
+        success: function(rows, status) {
+          if (rows.length == 0) {
+            $('#searchContainer').append(`<h1>Sorry there are no results</h1>`);
+          } else {
+            rows.forEach(function(item, i) {
+              if (i % 4 == 0) {
+                $('#searchContainer').append(`<br>`);
+              }
+              $('#searchContainer').append(`<div class="itemContainer">
+                <form>
+                  <input type="hidden" name="product_id" value="${item.productID}" />
+                  <input type="hidden" name="imageurl" value="${item.imageURL}" />
+                  <input type="hidden" name="description" value="${item.description}" />
+                  <input type="hidden" name="price" value="${item.price}" />
+                  <span class="description" id="description">${item.description}</span>
+                  <div class="imageContainer">
+                    <img class="image" src="${item.imageURL}" width="200" height="200" />
+                  </div>
+                  <span class="itemPrice" id="itemPrice">&dollar;${item.price}<br/></span>
+                  <br />
+                  <button type="button" class="add-to-cart">Add To Cart</button>
+                </form>
+              </div>
+            `);
+            });
+            $('.add-to-cart').on('click', function() {
+              let currentItem = $(this)
+                .parent()
+                .children();
+              let id = $(currentItem[0]).val();
+              let imageURL = $(currentItem[1]).val();
+              let description = $(currentItem[2]).val();
+              let price = $(currentItem[3]).val();
+  
+              $.ajax({
+                method: 'GET',
+                url: '/cart',
+                data: {
+                  id: id,
+                  imageURL: imageURL,
+                  description: description,
+                  price: price
+                }
+              });
+            });
+          }
+        }
+      });
+    });
+  
+    $('.updateBtn').on('click', function() {
+      let newQty = $(this)
+        .parent()
+        .prev()
+        .find('input')
+        .val();
+      let id = parseInt(
+        $(this)
+          .parent()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .text()
+      );
+      $.ajax({
+        method: 'GET',
+        url: '/checkoutupdate',
+        data: { id, newQty },
+        success: function() {
+          location.reload(true);
+        }
+      });
+    });
+  
+    $('.removeBtn').on('click', function() {
+      let id = parseInt(
+        $(this)
+          .parent()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .prev()
+          .text()
+      );
+      $.ajax({
+        method: 'GET',
+        url: '/checkoutremove',
+        data: { id },
+        success: function() {
+          location.reload(true);
+        }
+      });
+    });
+  
+    $('#submitBtn').on('click', function() {
+      $.ajax({
+        method: 'GET',
+        url: '/checkoutsubmit',
+        success: function() {
+          location.reload(true);
+        }
+      });
+    });
+  
+    $.ajax({
+      method: 'GET',
+      url: '/api/keywords',
+      success: function(result, status) {
+        result.forEach(function(element) {
+          $('#type').append(
+            '<option value="' +
+              element.keyword +
+              '">' +
+              element.keyword.toUpperCase() +
+              '</option>'
+          );
+        });
+      }
+    });
     
     function updateProduct(action, productID, imageURL, description, price)
     {
@@ -98,7 +231,7 @@ $(document).ready(function()
             
         });
     }
-   
+    
 }); //document ready
 
 function getItemCount()
@@ -112,10 +245,15 @@ function getItemCount()
         success: function(result, status)
         {
             //clear the results and start table
-            $("#totalResults").html("");
+            $("#totalResults").html("<table>");
             
             //show totals
-            $("#totalResults").append("Total: " + result[0].total + "<br>Active: " + result[1].total +"<br>Inactive: " + result[2].total);
+            $("#totalResults").append("<table><tr><th>Total Products in Store:</th><td id='right'>" + result[0].total 
+                + "</td></tr><tr><th>Active Products:</th><td id='right'>" + result[1].total
+                + "</td></tr><tr><th>Inactive Products:</th><td id='right'>" + result[2].total + "</td></tr>");
+                
+             //end table
+            $("#totalResults").append("</table>");
         }
     });
         
@@ -140,8 +278,8 @@ function getPrices()
             {
                 //show totals
                 $("#priceResults").append("<tr><td>" + result[i].Category
-                    + "</td><td>" + result[i].Count + "</td><td>" + result[i].Minimum
-                    + "</td><td>" + result[i].Maximum + "</td><td>" + result[i].Average
+                    + "</td><td id='right'>" + result[i].Count + "</td><td id='right'>" + result[i].Minimum
+                    + "</td><td id='right'>" + result[i].Maximum + "</td><td id='right'>" + result[i].Average
                     + "</td></tr>");
             });
             
@@ -151,4 +289,69 @@ function getPrices()
         }
     });
         
-} //getItemCount
+} //getPrices
+
+function getOrders()
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/getOrders",
+        data:   {
+                },
+        success: function(result, status)
+        {
+            //clear the results and start table
+            $("#orderResults").html("<table id=‘orderTable’>");
+            $("#orderResults").append("<tr><th>Order Number</th><th>Invoice Total</th></tr>");
+            result.forEach(function(row, i)
+            {
+                //show order totals
+                $("#orderResults").append("<tr><td>" + result[i].orderNumber
+                    + "</td><td>" + result[i].invoiceTotal + "</td></tr>");
+            });
+             //end table
+            $("#orderResults").append("</table>");
+        }
+    });
+}//getOrders
+
+function lookupItem()
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/lookupItem",
+        data:   {
+                    "productID": $("#productID").val()
+                },
+        success: function(result, status)
+        {
+            //clear the results and start table
+            $("#lookupResults").html("");
+            $("#lookupResults").append(result[0].description + "<br>"
+                + "<img src='" + result[0].imageURL + "' alt='image'><br>"
+                + "<form><input type='text' value='" + result[0].keyword
+                + "' name='keyword' id='keyword'><button name='update' onclick='updateItem(`" 
+                + result[0].productID + "`)' id='update'>Update</button></form>"
+            )
+
+        }
+    });
+        
+} //lookupItem
+
+function updateItem(productID)
+{
+    $.ajax(
+    {
+        method: "GET",
+        url:    "/api/updateItems",
+        data:   {
+                    "productID": productID,
+                    "keyword": document.getElementById('keyword').value,
+                    "action": "updateItem"
+                },
+
+    });
+}

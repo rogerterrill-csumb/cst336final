@@ -1,23 +1,20 @@
 <%- include('partials/header.ejs') %>
 
-    <br>
     <main>
         <h1>
             Product Search
         </h1>
      
+    <%- include('partials/adminNav.ejs') %>
+       
+    </main>
+    <div>
         <form action="/search">
             <input type="text" size="15" placeholder="Type keyword" name="keyword">
-            <br><br>
             <button>
                 Search
             </button>
-        </form>
-        <br>
-        <form action="/logout">
-            <button>Logout</button>
-        </form>
-       
-    </main>
+        </form>   
+    </div>
 
 <%- include('partials/footer.ejs') %>

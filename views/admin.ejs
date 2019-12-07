@@ -4,20 +4,20 @@
         <h1>
            Administration
         </h1>
-        <a href="/logout" class="whiteText">Logout</a>
-        <br>
+        <%- include('partials/adminNav.ejs') %>
     </main>
     <br>
     <div>
-        <a href="/productSearch" class="blackText">Add/Remove Products</a>
-    </div>
-    <div id="reportsContainer">
+        <div id="reportsContainer">
         <button onclick="getItemCount()">Show Product Totals Statistics</button><br>
         <div id="totalResults"></div><br>
-        <button onclick="getPrices()">Show Product Price Statistics</button><br><br>
+        <button onclick="getPrices()">Show Product Price Statistics</button><br>
         <div id="priceResults"></div><br>
-        
-        
+        <button onclick="getOrders()">Show Order Totals Statistics</button><br>
+        <div id="orderResults"></div><br>
     </div>
+    </div>
+    
+
 
 <%- include('partials/footer.ejs') %>
