@@ -250,14 +250,13 @@ app.get('/api/displayItems', tools.isAuthenticated, async function(req, res) {
 
 //display items route
 app.get('/api/displaySearchItems', async function(req, res) {
-  var connection = tools.createConnection();
-
+  
   let description = req.query.description ? `%${req.query.description}%` : '%%';
   let keyword = req.query.keyword;
   let pricefrom = req.query.pricefrom || 0;
   let priceto = req.query.priceto || 1000;
   var sql =
-    'SELECT * FROM products WHERE keyword LIKE ? AND description LIKE ? AND price BETWEEN ? AND ?';
+    "SELECT * FROM products WHERE keyword LIKE ? AND description LIKE ? AND price BETWEEN ? AND ?";
   var sqlParams = [keyword, description, pricefrom, priceto];
 
   let results = await tools.displaySearchItems(sql, sqlParams);

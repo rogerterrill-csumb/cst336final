@@ -152,7 +152,7 @@ module.exports = {
       let connection = module.exports.createConnection();
       connection.connect(function(err) {
         if (err) throw err;
-        connection.query(sql, function(err, rows, fields) {
+        connection.query(sql, sqlParams, function(err, rows, fields) {
           if (err) throw err;
           //console.log("rows found:" + rows.length);
           resolve(rows);
