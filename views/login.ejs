@@ -1,15 +1,18 @@
 <%- include('partials/header.ejs') %>
 
-    <main>
-        <h1>
-            Login
-        </h1>
-        <form method="POST">
-            Username: <input type="text" name="username"><br>
-            Password: <input type="password" name="password"><br>
-            <button>Login</button>
-        </form>
-        <br>
+    <main class = "text-center" style="width:400px; margin:auto;" >
+        <div class="card" style="background-image: url(/img/bg3.jpg);">
+            <div class="card-body">
+                <h3 class="card-title">Admin Login</h4>
+                <form method="POST">
+                    <label for="username">Username:</label> 
+                    <input type="text" class="form-control" name="username"> <br>
+                    <label for="password">Password: </label>
+                    <input type="password" class="form-control" placeholder="Password" name="password"> <br>
+                    <button class="btn btn-secondary">Login</button>
+                </form>
+            </div>
+        </div>
     </main>
 
 <%- include('partials/footer.ejs') %>

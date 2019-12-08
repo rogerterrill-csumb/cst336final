@@ -10,37 +10,40 @@
         <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/slate/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-G9YbB4o4U6WS4wCthMOpAeweY4gQJyyx0P3nZbEBHyz+AtNoeasfRChmek1C2iqV" crossorigin="anonymous">
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-image: url(/img/hands.gif); background-size: auto;">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-image: url(/img/hands.gif); background-size: cover;">
         <!--<nav class="navbar navbar-expand-lg navbar-dark bg-dark">-->
-        <a class="navbar-brand" href="/">Zombie Apocalypse Prep Store (ZAPS) </a>
+        <a class="navbar-brand" href="/admin">Zombie Apocalypse Prep Store (ZAPS) </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false">
             <span class="navbar-toggler-icon"></span>
         </button>   
         <div class="collapse navbar-collapse" id="navbarColor02">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/admin">Admin Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/shop">Browse Shop</a>
+                <a class="nav-link" href="/displayKeywords">View Items</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/checkout">Cart</a>
+                <a class="nav-link" href="/productSearch">Add/Remove Items</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/login">Admin Login</a>
+                <a class="nav-link" href="/productUpdate">Update Items</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout" class="btn btn-danger">Admin Logout</a>
               </li>
             </ul>
-            <!--<form class="form-inline my-2 my-lg-0">-->
-            <!--  <input class="form-control mr-sm-2" type="text" placeholder="Search">-->
-            <!--  <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>-->
-            <!--</form>-->
+            <form action="/search" class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Admin Search" name="keyword">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        
+            
       </div>
         </nav>
         <br>
         <br>
             
     </head>
-    <body>
-        
-            
+    <body style="background-image: url(/img/bg3.jpg);">

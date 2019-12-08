@@ -1,23 +1,51 @@
-<%- include('partials/header.ejs') %>
+<%- include('partials/aheader.ejs') %>
 
-    <main>
+    <main class="text-center">
         <h1>
-           Administration
+           Administration Reports
         </h1>
-        <%- include('partials/adminNav.ejs') %>
-    </main>
     <br>
+    
     <div>
-        <div id="reportsContainer">
-        <button onclick="getItemCount()">Show Product Totals Statistics</button><br>
-        <div id="totalResults"></div><br>
-        <button onclick="getPrices()">Show Product Price Statistics</button><br>
-        <div id="priceResults"></div><br>
-        <button onclick="getOrders()">Show Order Totals Statistics</button><br>
-        <div id="orderResults"></div><br>
-    </div>
+        <div class="row justify-content-center" id="reportsContainer">
+            <div class="column">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Products Statistics</div>    
+                <div class="card-body">
+                    <button onclick="getItemCount()">Show Product Totals Statistics</button><br>
+                    <div id="totalResults"></div><br>
+                </div>
+            </div>
+            </div>
+            <div class="column">
+            <div class="card text-white bg-primary mb-3" >
+                <div class="card-header">Price Statistics</div>    
+                <div class="card-body">
+                    <button onclick="getPrices()">Show Product Price Statistics</button><br>
+                    <div id="priceResults"></div><br>
+                </div>
+            </div>
+            </div>
+            <div class="column">
+            <div class="card text-white bg-primary mb-3" >
+                <div class="card-header">Order Statistics</div>    
+                <div class="card-body">            
+                    <button onclick="getOrders()">Show Order Totals Statistics</button><br>
+                    <div id="orderResults"></div><br>
+                </div>
+            </div>
+            </div>
+        </div>
     </div>
     
-
+    </main>
 
 <%- include('partials/footer.ejs') %>
+
+<!--<div class="card text-white bg-primary mb-3" style="max-width: 20rem;">-->
+<!--  <div class="card-header">Header</div>-->
+<!--  <div class="card-body">-->
+<!--    <h4 class="card-title">Primary card title</h4>-->
+<!--    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--  </div>-->
+<!--</div>-->

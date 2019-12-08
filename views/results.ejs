@@ -1,7 +1,6 @@
-<%- include('partials/header.ejs') %>
-    <main>
-        <%- include('partials/adminNav.ejs') %>
-    </main>
+<%- include('partials/aheader.ejs') %>
+    <main class = "text-center">
+        
     <form action="/search">
         <input type="text" size="10" placeholder="Type keyword" name="keyword" id ="keyword" value = "<%=keyword%>" >
         <button>
@@ -22,7 +21,7 @@
                 <div class = "imageContainer">
                     <img class="image" src='<%=url%>' width='200' height='200'><img class='favoriteIcon' src='img/checkbox_empty.png'>
                 </div>
-                <span class='itemPrice' id='itemPrice'>&dollar;<%=item.storeSku.pricing.originalPrice%><br></span>
+                <span class='itemPrice' id='itemPrice'>&dollar;<%=item.storeSku.pricing.originalPrice%></span> <br>
                 <span class='productID' id='productID'>(<%=item.productId%>)</span>
                 
             </div>
@@ -30,5 +29,5 @@
         <% });    %>
         
     </div>
-        
+    </main>
 <%- include('partials/footer.ejs') %>
