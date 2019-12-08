@@ -3,7 +3,43 @@ const mysql = require('mysql');
 const bcrypt = require('bcrypt-nodejs');
 
 module.exports = {
-  /**Return product info from API
+
+
+  //function to connect to database
+  createConnection: function() {
+    var connection = mysql.createConnection({
+      host: 'cst336final.mysql.database.azure.com',
+      user: 'dbadmin@cst336final',
+      password: 'Otter2020!',
+      database: 'eStore',
+      port: 3306
+    });
+
+    //handle errors during connection
+    connection.on('error', function(err) {
+      console.log(err.code);
+    });
+    
+    //handle errors for closed connection
+    //eg 'connections closed without response',ECONNRESET, ...
+    connection.on('close', function(err) {
+      console.log(err.code);
+    });
+    
+    //handle errors for end of connection
+    //eg. ER_TOO_MANY_USER_CONNECTIONS:
+   /* connection.end(function(err) 
+    {
+      if (err) 
+      {
+        console.log(err.message);
+      }
+    }); */
+    
+    return connection;
+  }, //createConnection
+  
+    /**Return product info from API
    * @param string keyword - search term
    * @param int imageCount - number of random images
    * @return array of product info (description, price, imageURL)
@@ -37,24 +73,53 @@ module.exports = {
       }); //request
     }); //promise
   }, //function getItems
+  
+  /**Update items in inventory
+   * @params sql - sql string
+   * @params sqlParams - array with product values
+   * @return array with items
+   */
 
-  //function to connect to database
-  createConnection: function() {
-    var connection = mysql.createConnection({
-      host: 'cst336final.mysql.database.azure.com',
-      user: 'dbadmin@cst336final',
-      password: 'Otter2020!',
-      database: 'eStore',
-      port: 3306
-    });
+  updateItems: function(sql, sqlParams) {
+    
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, sqlParams, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
+  
+  /**display items from inventory
+   * @params sql - sql string
+   * @params sqlParams - array with product values
+   * @return array with items
+   */
 
-    //handle errors during connection
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    return connection;
-  }, //createConnection
+  displayItems: function(sqlParams) 
+  {
+    let sql = "SELECT productID, imageURL, description, price "
+    + "FROM products WHERE status = 1 AND keyword = ?";
+  
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, sqlParams, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
 
   /**Get only items in our DB
    * @return array with items
@@ -62,6 +127,27 @@ module.exports = {
 
   getDBItems: function() {
     let sql = 'SELECT * FROM products';
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
+  
+  /**Display search items
+   * @param sql -sql query string
+   * @param sqlParams - sql query parameters
+   * @return array with items
+   */
+
+  displaySearchItems: function(sql, sqlParams) {
+    
     return new Promise(function(resolve, reject) {
       let connection = module.exports.createConnection();
       connection.connect(function(err) {
@@ -110,6 +196,127 @@ module.exports = {
         resolve(result);
       }); // compare
     }); // promise
+  },
+  
+   /**show keywords for viewing inventory
+   * @param (none)
+   * @return object arrary
+   */
+  
+  getKeywords: function(productID) 
+  {
+    var sql =
+    'SELECT DISTINCT keyword FROM products WHERE status = 1 ORDER BY keyword';
+  
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
+  
+  
+   /**lookup items for editing
+   * @param string productID - admin entered productID
+   * @return object arrary
+   */
+  
+  lookupItem: function(productID) 
+  {
+    var sql = 'SELECT productID, description, imageURL, keyword FROM products WHERE productID = ?';
+  
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, [productID], function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
+
+  /**get item prices for administration reports
+   * @param (none)
+   * @return object arrary
+   */
+  
+  getPrices: function() 
+  {
+    var sql =
+    "SELECT IFNULL(`keyword`,'TOTAL') as 'Category', CONCAT('$', FORMAT(min(price),2)) as 'Minimum', " +
+    "COUNT(keyword) as 'Count', CONCAT('$', FORMAT(max(price),2)) as 'Maximum', " +
+    "CONCAT('$', FORMAT(avg(price),2)) as 'Average' FROM products WHERE status = 1 " +
+    'GROUP by keyword WITH ROLLUP';
+  
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
+  
+    /**get orders for administration reports
+   * @param (none)
+   * @return object arrary
+   */
+  
+  getOrders: function() 
+  {
+    var sql = "SELECT IFNULL(orderID, 'TOTAL') as 'orderNumber',"
+      + "CONCAT('$', FORMAT(SUM(total_price),2)) as 'invoiceTotal' "
+      + "FROM `line items` GROUP BY orderID WITH ROLLUP";
+  
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
+  
+  /**get item count for administration reports
+   * @param (none)
+   * @return object arrary
+   */
+  
+  getItemCount: function() 
+  {
+    var sql =
+    "SELECT count(*) as 'total' FROM products" +
+    " UNION SELECT count(*) as 'activeTotal' from products WHERE status = 1" +
+    " UNION SELECT count(*) as 'inactiveTotal' from products WHERE status = 0";
+  
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, function(err, rows, fields) {
+          if (err) throw err;
+          //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
   },
 
   /**check for session authentication
