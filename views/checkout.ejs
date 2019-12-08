@@ -1,7 +1,7 @@
 <%- include('partials/header.ejs') %>
 
 <br />
-<main>
+<main class="jumbotron text-center" style="background-image: url(/img/bg3.jpg);">
   <h1>
     Checkout
   </h1>
@@ -37,8 +37,8 @@
       </td>
       <td><%=item.description%></td>
       <td><input class="qty" type="number" value="<%=item.qty%>" /></td>
-      <td><button class="updateBtn">Update</button></td>
-      <td><button class="removeBtn">Remove</button></td>
+      <td><button class="updateBtn btn btn-primary">Update</button></td>
+      <td><button class="removeBtn btn btn-danger">Remove</button></td>
       <td><%=parseFloat(item.price).toFixed(2)%></td>
       <td><%=parseFloat(item.price*item.qty).toFixed(2)%></td>
       <% subtotal = subtotal + (item.price*item.qty)%>
@@ -48,35 +48,35 @@
     <tr>
       <td></td>
       <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>SubTotal:</td>
+      <td>SubTotal</td>
       <td>$<%=parseFloat(subtotal).toFixed(2)%></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
     <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
       <td></td>
       <td></td>
       <td>Tax:</td>
       <td>$<%=parseFloat(subtotal * 0.0775).toFixed(2)%></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
     <tr>
       <td></td>
       <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
       <td>Total:</td>
       <td>$<%=parseFloat(subtotal * 1.0775).toFixed(2)%></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
   </table>
-  <button id="submitBtn">Submit Order</button>
+  <button id="submitBtn" class="btn btn-success">Submit Order</button>
   <% } %>
 </main>
 

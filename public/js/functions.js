@@ -49,7 +49,7 @@ $(document).ready(function()
                                 + "<img class= 'image' src='" + row.imageURL + "' width='200' height='200'>"
                                 + "<img class= 'favoriteIcon' src='img/checkbox_full.png'>"
                                 + "</div>"
-                                + "<span class= 'itemPrice' id='itemPrice'>&dollar;" + row.price + "<br></span>"
+                                + "<span class= 'itemPrice' id='itemPrice'>&dollar;" + row.price + "<br></span><br>"
                                 + "<span class= 'productID' id='productID'>(" + row.productID + ")</span>"
                                 + "</div>"
                             );
@@ -110,10 +110,12 @@ $(document).ready(function()
                   <div class="imageContainer">
                     <img class="image" src="${item.imageURL}" width="200" height="200" />
                   </div>
-                  <span class="itemPrice" id="itemPrice">&dollar;${item.price}<br/></span>
-                  <br />
-                  <button type="button" class="add-to-cart">Add To Cart</button>
+                  <span class="itemPrice" id="itemPrice">&dollar;${item.price}<br></span>
+                  <br>
+                  <button type="button" class="add-to-cart btn btn-success">Add To Cart</button>
+                  
                 </form>
+                <br>
               </div>
             `);
             });
@@ -271,7 +273,7 @@ function getPrices()
         {
             //clear the results and start table
             $("#priceResults").html("<table id='priceTable'>");
-            $("#priceResults").append("<tr><th>Category</th><th>Count</th><th>Minimum</th><th>Maximum</th><th>Average</th></tr>");
+            $("#priceResults").append("<tr><th> Category --</th><th> Count - </th><th> - Minimum - </th><th> - Maximum - </th><th> - Average </th></tr>");
             
             //add favorite images
             result.forEach(function(row, i)
@@ -303,7 +305,7 @@ function getOrders()
         {
             //clear the results and start table
             $("#orderResults").html("<table id=‘orderTable’>");
-            $("#orderResults").append("<tr><th>Order Number</th><th>Invoice Total</th></tr>");
+            $("#orderResults").append("<tr><th>Order Number - </th><th>- Invoice Total </th></tr>");
             result.forEach(function(row, i)
             {
                 //show order totals
@@ -329,9 +331,9 @@ function lookupItem()
         {
             //clear the results and start table
             $("#lookupResults").html("");
-            $("#lookupResults").append(result[0].description + "<br>"
-                + "<img src='" + result[0].imageURL + "' alt='image'><br>"
-                + "<form><input type='text' value='" + result[0].keyword
+            $("#lookupResults").append(result[0].description + "<br><br>"
+                + "<img src='" + result[0].imageURL + "' alt='image'><br><br>"
+                + "<form><input type='text' value='" + result[0].keyword 
                 + "' name='keyword' id='keyword'><button name='update' onclick='updateItem(`" 
                 + result[0].productID + "`)' id='update'>Update</button></form>"
             )
