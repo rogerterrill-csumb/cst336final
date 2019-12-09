@@ -52,7 +52,12 @@ module.exports = {
     return new Promise(function(resolve, reject) {
       request(requestURL, function(error, response, body) {
         if (!error) {
-          var parsedData = JSON.parse(body);
+          try {
+            var parsedData = JSON.parse(body);
+          } 
+          catch (e) {
+            console.log(e);
+          }
           //console.log(parsedData);
           var items = [];
           //dont iterate array if no products returned

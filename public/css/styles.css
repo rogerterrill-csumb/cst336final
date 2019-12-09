@@ -12,16 +12,6 @@ body
 }
 
 
-/*input, button*/
-/*{*/
-/*    font-size: .8em*/
-/*}*/
-
-/*button*/
-/*{*/
-/*    border-radius: 5px;*/
-/*}*/
-
 main
 {
     /*background-color: rgba(0,0,0,0.75);*/
@@ -32,25 +22,6 @@ main
      background-size: cover;
 }
 
-/*h1*/
-/*{*/
-/*    color: silver;*/
-/*    margin:0 auto;*/
-/*}*/
-
-/*#priceTable*/
-/*{*/
-/*    border-collapse: separate;*/
-/*    border-spacing: 20px;*/
-/*    text-align: left;*/
-/*    display: table;*/
-/*}*/
-
-
-/*#right*/
-/*{*/
-/*    text-align: right;*/
-/*}*/
 
 #reportsContainer
 {
@@ -64,6 +35,12 @@ main
     text-align: center;
     display: inline-block;
 }
+
+#lookupResults:empty
+{
+    display: none !important;
+}
+
 #favLink
 {
     background-color: rgba(250,250,250,0.75);
