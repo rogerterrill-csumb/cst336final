@@ -174,7 +174,33 @@ module.exports = {
         if (err) throw err;
         connection.query(sql, [username], function(err, rows, fields) {
           if (err) throw err;
+          console.log("ROws FOUND: ", rows)
           //console.log("rows found:" + rows.length);
+          resolve(rows);
+        }); //sql
+      }); //connection
+    }); //promise
+  },
+
+  /**check for valid username
+   * @param string username
+   * @return array with username and password
+   */
+
+  addUsername: function(username) {
+    let sql = `SELECT new_order('${username}') as orderid`;
+    return new Promise(function(resolve, reject) {
+      let connection = module.exports.createConnection();
+      connection.connect(function(err) {
+        if (err) throw err;
+        connection.query(sql, [username], function(err, rows, fields) {
+          if(err){
+            if(err.code == 'ER_DUP_ENTRY'){
+              resolve("DUPLICATE");
+            } else throw err;
+          }
+          //console.log("rows found:" + rows.length);
+          console.log("toolsjs: ", rows)
           resolve(rows);
         }); //sql
       }); //connection
@@ -331,5 +357,13 @@ module.exports = {
     } else {
       next();
     }
+  },
+
+  getSqlParams: function(orderid, items){
+    let newArr = [];
+    items.forEach(function(item, index) {
+      newArr.push([parseInt(orderid), (index + 1), parseInt(item.id), (parseFloat(item.price) * item.qty), item.description])  
+    })
+    return newArr;
   }
 }; //modules
