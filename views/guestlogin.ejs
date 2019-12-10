@@ -1,0 +1,21 @@
+<%- include('partials/header.ejs') %>
+
+    <main class = "text-center" style="width:400px; margin:auto;" >
+        <div class="card" style="background-image: url(/img/bg3.jpg);">
+            <div class="card-body">
+                <h3 class="card-title">Guest Login</h4>
+                <form method="POST">
+                    <label for="username">Username:</label> 
+                    <input type="text" class="form-control" name="username"> <br>
+
+                    <% if(loginError){ %>
+                        <h2>Name already exists!</h2>
+                        <% } %>
+
+                    <button class="btn btn-secondary">Login</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+<%- include('partials/footer.ejs') %>

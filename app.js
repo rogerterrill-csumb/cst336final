@@ -18,17 +18,17 @@ var sessionStore = new MySQLStore(options);
 
 app.set('view engine', 'ejs');
 
-app.use(express.static("public"));
-app.use(session(
-    {
-    secret: "Z1BbyuR6LWG6Rehi9oxj",
+app.use(express.static('public'));
+app.use(
+  session({
+    secret: 'Z1BbyuR6LWG6Rehi9oxj',
     resave: true,
     saveUninitialized: true,
     store: sessionStore,
     cookie: { maxAge: 180000 }
-  }));
-app.use(express.urlencoded({extended: true}));
-
+  })
+);
+app.use(express.urlencoded({ extended: true }));
 
 //ROUTES
 
@@ -36,15 +36,22 @@ app.use(express.urlencoded({extended: true}));
 app.get('/', function(req, res) {
   if (!req.session.cart) {
     req.session.cart = {
-      items: []
+      items: [],
+      orderid: 0,
+      username: '',
     };
   }
-  res.render('index.ejs');
+  res.render('index.ejs', {username: req.session.cart.username});
 });
 
 //login route
 app.get('/login', function(req, res) {
-  res.render('login.ejs');
+  res.render('login.ejs', {username: req.session.cart.username});
+});
+
+//guest login route
+app.get('/guestlogin', function(req, res) {
+  res.render('guestlogin.ejs', { loginError: false, username: req.session.cart.username });
 });
 
 //logout route
@@ -76,19 +83,21 @@ app.get('/search', tools.isAuthenticated, async function(req, res) {
   if (keyword != '') {
     var items = [];
     items = await tools.getItems(keyword);
-    //console.log("items " + items);
+    //console.log('items ' + items);
     res.render('results.ejs', { items: items, keyword: keyword });
   }
 }); //search
 
 //shop route
 app.get('/shop', async function(req, res) {
-  res.render('shop.ejs');
+  res.render('shop.ejs',{username: req.session.cart.username});
 });
 
 app.get('/checkout', function(req, res) {
   let items = req.session.cart.items;
-  res.render('checkout.ejs', { items: items });
+  let username = req.session.cart.username;
+  let orderid = parseInt(req.session.cart.orderid);
+  res.render('checkout.ejs', { items: items, username:username, orderid:orderid });
 });
 
 app.get('/checkoutupdate', function(req, res) {
@@ -105,52 +114,25 @@ app.get('/checkoutremove', function(req, res) {
   let cart = req.session.cart;
 
   Cart._removeFromCart(id, cart);
-  res.redirect('/checkout');;
+  res.redirect('/checkout');
 });
 
 app.get('/checkoutsubmit', function(req, res) {
   let connection = tools.createConnection();
   let cart = req.session.cart;
   let items = req.session.cart.items;
-  items.forEach(item => {
-    item.orderid = '@orderIDfromOrders';
-  });
-  console.log(items);
-  let orderDate = Cart._formatTime(new Date());
+  let orderid = req.session.cart.orderid;
+  console.log(tools.getSqlParams(orderid, items));
 
-  let sql = 'INSERT INTO orders (userID, order_Date) VALUES (?,?)';
-  let sql2 = 'SET @orderIDFromOrders = "37"';
-  let sql3 =
+  let sql =
     'INSERT INTO `line items` (orderID, line_item_sequence, productID, total_price, item_description) VALUES ?';
-  let sqlParams = [4, orderDate];
-  let sqlParams2 = [
-    ['@orderIDFromOrders', '1', '100291336', '18.69', 'sasdf'],
-    ['@orderIDFromOrders', '2', '100291336', '18.69', 'adsfasd'],
-    ['@orderIDFromOrders', '3', '100291336', '18.69', 'adsfasdf']
-  ];
+  let sqlParams = tools.getSqlParams(orderid, items);
 
   connection.connect(function(error) {
     if (error) throw error;
-    connection.query(sql, sqlParams, function(err, result) {
+    connection.query(sql, [sqlParams], function(err, result) {
       if (error) throw err;
     }); //query
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-    connection.query(sql2, function(err, result) {
-      if (error) throw err;
-    }); //query
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    connection.query(sql3, [sqlParams2], function(err, result) {
-      if (error) throw err;
-    }); //query
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
     connection.on('error', function(err) {
       console.log(err.code);
     });
@@ -186,15 +168,14 @@ app.get('/cart', function(req, res) {
 });
 
 //add or update database items
-app.get('/api/updateItems', tools.isAuthenticated, function(req, res) {
-  var connection = tools.createConnection();
-  //console.log("action:" + req.query.action);
+app.get('/api/updateItems', tools.isAuthenticated, async function(req, res) {
+  var action = req.query.action;
+
   if (req.query.action == 'add') {
     var sql =
       'INSERT INTO products(productID, imageURL, description, price,' +
       ' keyword) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = 1';
 
-    //console.log("pr" + req.query.productID);
     var sqlParams = [
       req.query.productID,
       req.query.imageURL,
@@ -211,133 +192,38 @@ app.get('/api/updateItems', tools.isAuthenticated, function(req, res) {
     var sqlParams = [req.query.productID];
   }
 
-  connection.connect(function(error) {
-    if (error) throw error;
-    connection.query(sql, sqlParams, function(err, result) {
-      if (error) throw err;
-    }); //query
-
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    //handle errors for end of connection
-    //eg. ER_TOO_MANY_USER_CONNECTIONS:
-    connection.end(function(err) {
-      if (err) {
-        console.log(err.message);
-      }
-    });
-  }); //connect
+  let results = await tools.updateItems(sql, sqlParams);
 
   res.send('It works.');
 }); //update items
 
-//display keyword route
-app.get('/displayKeywords', function(req, res) {
-  //var imageURLs = await tools.getRandomImages("",1);
-  var connection = tools.createConnection();
-  var sql =
-    'SELECT DISTINCT keyword FROM products WHERE status = 1 ORDER BY keyword';
-
-  connection.connect(function(error) {
-    if (error) throw error;
-    connection.query(sql, function(err, result) {
-      if (err) throw err;
-      res.render('selectedProducts', { rows: result });
-    }); //query
-
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    //handle errors for end of connection
-    //eg. ER_TOO_MANY_USER_CONNECTIONS:
-    connection.end(function(err) {
-      if (err) {
-        console.log(err.message);
-      }
-    });
-  }); //connect
-}); //displayKeywords
+//api keyword route
+app.get('/api/keywords', async function(req, res) {
+  let results = await tools.getKeywords();
+  if (results.length > 0) {
+    res.send(results);
+  }
+}); //api/Keywords
 
 //display keyword route
-app.get('/api/keywords', function(req, res) {
-  var connection = tools.createConnection();
-  var sql =
-    'SELECT DISTINCT keyword FROM products WHERE status = 1 ORDER BY keyword';
-
-  connection.connect(function(error) {
-    if (error) throw error;
-    connection.query(sql, function(err, results) {
-      if (err) throw err;
-      res.send(results);
-    }); //query
-
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    //handle errors for end of connection
-    //eg. ER_TOO_MANY_USER_CONNECTIONS:
-    connection.end(function(err) {
-      if (err) {
-        console.log(err.message);
-      }
-    });
-  }); //connect
+app.get('/displayKeywords', async function(req, res) {
+  let result = await tools.getKeywords();
+  if (result.length > 0) {
+    res.render('selectedProducts', { rows: result });
+  }
 }); //displayKeywords
 
 //display items route
-app.get('/api/displayItems', tools.isAuthenticated, function(req, res) {
-  var connection = tools.createConnection();
-  var sql =
-    'SELECT productID, imageURL, description, price FROM products WHERE status = 1 AND keyword = ?';
+app.get('/api/displayItems', tools.isAuthenticated, async function(req, res) {
   var sqlParams = [req.query.keyword];
-
-  connection.connect(function(error) {
-    if (error) throw error;
-    try {
-      connection.query(sql, sqlParams, function(err, results) {
-        if (err) throw err;
-        res.send(results);
-      }); //query
-    } catch (err) {
-      console.log(err);
-    }
-
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    //handle errors for end of connection
-    //eg. ER_TOO_MANY_USER_CONNECTIONS:
-    connection.end(function(err) {
-      if (err) {
-        console.log(err.message);
-      }
-    });
-
-    //handle errors for closed connection
-    //eg 'connections closed without response',ECONNRESET, ...
-    connection.on('close', function(err) {
-      console.log(err.code);
-    });
-  }); //connect
-}); //displayKeywords
+  let results = await tools.displayItems(sqlParams);
+  if (results.length > 0) {
+    res.send(results);
+  }
+}); //displayItems
 
 //display items route
-app.get('/api/displaySearchItems', function(req, res) {
-  var connection = tools.createConnection();
-
+app.get('/api/displaySearchItems', async function(req, res) {
   let description = req.query.description ? `%${req.query.description}%` : '%%';
   let keyword = req.query.keyword;
   let pricefrom = req.query.pricefrom || 0;
@@ -346,122 +232,61 @@ app.get('/api/displaySearchItems', function(req, res) {
     'SELECT * FROM products WHERE keyword LIKE ? AND description LIKE ? AND price BETWEEN ? AND ?';
   var sqlParams = [keyword, description, pricefrom, priceto];
 
-  connection.connect(function(error) {
-    if (error) throw error;
-    try {
-      connection.query(sql, sqlParams, function(err, results) {
-        if (err) throw err;
-        // console.log(results);
-        res.send(results);
-      }); //query
-    } catch (err) {
-      console.log(err);
-    }
-
-    //handle errors during connection
-    //eg 'PROTOCOL_CONNECTION_LOST'
-    connection.on('error', function(err) {
-      console.log(err.code);
-    });
-
-    //handle errors for end of connection
-    //eg. ER_TOO_MANY_USER_CONNECTIONS:
-    connection.end(function(err) {
-      if (err) {
-        console.log(err.message);
-      }
-    });
-
-    //handle errors for closed connection
-    //eg 'connections closed without response',ECONNRESET, ...
-    connection.on('close', function(err) {
-      console.log(err.code);
-    });
-  }); //connect
-}); //displayKeywords
+  let results = await tools.displaySearchItems(sql, sqlParams);
+  if (results.length > 0) {
+    res.send(results);
+  }
+}); //displaySearchItems
 
 //send item count
-app.get('/api/getItemCount', tools.isAuthenticated, function(req, res) {
-  var connection = tools.createConnection();
-  var sql =
-    "SELECT count(*) as 'total' FROM products" +
-    " UNION SELECT count(*) as 'activeTotal' from products WHERE status = 1" +
-    " UNION SELECT count(*) as 'inactiveTotal' from products WHERE status = 0";
-  connection.connect(function(error) {
-    if (error) throw error;
-    try {
-      connection.query(sql, function(err, results) {
-        if (err) throw err;
-        res.send(results);
-      }); //query
-    } catch (err) {
-      console.log(err);
-    }
-  }); //connect
-}); //function
+app.get('/api/getItemCount', tools.isAuthenticated, async function(req, res) {
+  let results = await tools.getItemCount();
+  if (results.length > 0) {
+    res.send(results);
+  }
+}); //function /api/getItemCount
 
 //send prices
-app.get('/api/getPrices', tools.isAuthenticated, function(req, res) {
-  var connection = tools.createConnection();
-
-  var sql =
-    "SELECT IFNULL(`keyword`,'TOTAL') as 'Category', CONCAT('$', FORMAT(min(price),2)) as 'Minimum', " +
-    "COUNT(keyword) as 'Count', CONCAT('$', FORMAT(max(price),2)) as 'Maximum', " +
-    "CONCAT('$', FORMAT(avg(price),2)) as 'Average' FROM products WHERE status = 1 " +
-    'GROUP by keyword WITH ROLLUP';
-
-  connection.connect(function(error) {
-    if (error) throw error;
-    try {
-      connection.query(sql, function(err, results) {
-        if (err) throw err;
-        res.send(results);
-      }); //query
-    } catch (err) {
-      console.log(err);
-    }
-  }); //connect
-}); //function
+app.get('/api/getPrices', tools.isAuthenticated, async function(req, res) {
+  let results = await tools.getPrices();
+  if (results.length > 0) {
+    res.send(results);
+  }
+}); //function /api/getPrices
 
 //send orders
-app.get('/api/getOrders', tools.isAuthenticated, function(req, res) {
-  var connection = tools.createConnection();
-  var sql =
-    "SELECT IFNULL(orderID, 'TOTAL') as 'orderNumber', CONCAT('$', FORMAT(SUM(total_price),2)) as 'invoiceTotal' " +
-    'FROM `line items` GROUP BY orderID WITH ROLLUP';
-  connection.connect(function(error) {
-    if (error) throw error;
-    try {
-      connection.query(sql, function(err, results) {
-        if (err) throw err;
-        res.send(results);
-      }); //query
-    } catch (err) {
-      console.log(err);
-    }
-  }); //connect
+app.get('/api/getOrders', tools.isAuthenticated, async function(req, res) {
+  let results = await tools.getOrders();
+  if (results.length > 0) {
+    res.send(results);
+  }
 }); //function
 
 // lookup single item for editing
 app.get('/api/lookupItem', tools.isAuthenticated, async function(req, res) {
-  var connection = tools.createConnection();
-  var sqlParams = [req.query.productID];
-  var sql =
-    'SELECT productID, description, imageURL, keyword FROM products WHERE productID = ?';
+  var productID = [req.query.productID];
 
-  connection.connect(function(error) {
-    if (error) throw error;
-    try {
-      connection.query(sql, sqlParams, function(err, results) {
-        if (err) throw err;
-        //console.log(results);
-        res.send(results);
-      }); //query
-    } catch (err) {
-      console.log(err);
-    }
-  }); //connect
+  let results = await tools.lookupItem(productID);
+  if (results.length > 0) {
+    res.send(results);
+  }
 }); //lookup item
+
+//Guest login submission route
+app.post('/guestlogin', async function(req, res) {
+  let username = req.body.username;
+
+  let result = await tools.addUsername(username);
+  console.log('GUEST LOGIN RESULT: ', result);
+
+  if (result == 'DUPLICATE') {
+    res.render('guestlogin.ejs', { loginError: true });
+  } else {
+    req.session.cart.orderid = result[0].orderid;
+    req.session.cart.username = username;
+    res.redirect('/shop');
+  }
+}); //post guest login
 
 //login submission route
 app.post('/login', async function(req, res) {
@@ -477,7 +302,7 @@ app.post('/login', async function(req, res) {
   }
 
   let passwordMatch = await tools.checkPassword(password, hashedPassword);
-  //console.log("Password match:" + passwordMatch);
+  //console.log('Password match:' + passwordMatch);
 
   if (passwordMatch) {
     req.session.authenticated = true;
