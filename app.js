@@ -169,8 +169,9 @@ app.get('/cart', function(req, res) {
 
 //add or update database items
 app.get('/api/updateItems', tools.isAuthenticated, async function(req, res) {
+  
   var action = req.query.action;
-
+  console.log("Action: " + action);
   if (req.query.action == 'add') {
     var sql =
       'INSERT INTO products(productID, imageURL, description, price,' +
@@ -183,6 +184,8 @@ app.get('/api/updateItems', tools.isAuthenticated, async function(req, res) {
       req.query.price,
       req.query.keyword
     ];
+    
+    console.log(sqlParams);
   } else if (req.query.action == 'updateItem') {
     var sql = 'UPDATE products SET keyword = ? WHERE productID = ?';
     var sqlParams = [req.query.keyword, req.query.productID];

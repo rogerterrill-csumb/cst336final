@@ -8,12 +8,13 @@ $(document).ready(function()
         var description = $(this).parent().parent().find('span:first').text();
         var imageURL = $(this).prev().attr("src");
         var price = $(this).parent().next('span').text();
-        var productID = $(this).parent().next('span').next('span').text();
+        var productID = $(this).parent().next().next().next().text();
+        //alert("test: " + $(this).parent().next().next().next().text());
         
         if ($(this).attr("src") == "img/checkbox_empty.png")
         {
             $(this).attr("src","img/checkbox_full.png");
-            //console.log(description);
+            //alert("PI: " + productID);
             updateProduct("add", parseInt(productID.replace("(","")), imageURL, description, parseFloat(price.replace("$","")));
         }
         else
@@ -72,7 +73,10 @@ $(document).ready(function()
                                     else
                                     {
                                         $(this).attr("src","img/checkbox_full.png");
-                                        updateProduct("add", parseInt(productID.replace("(","")), imageURL, description, parseFloat(price.replace("$","")));
+                                        alert("pr: " + parseInt(productID.replace("(","")));
+                                        var temp = productID.replace("(","");
+                                        temp = temp.replace(")","");
+                                        updateProduct("add", parseInt(temp), imageURL, description, parseFloat(price.replace("$","")));
                                     }
                                     
                         }); //favorite onClick  
