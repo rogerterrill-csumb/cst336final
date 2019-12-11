@@ -62,7 +62,7 @@ $(document).ready(function()
                                     var description = $(this).parent().parent().find('span:first').text();
                                     var imageURL = $(this).prev().attr("src");
                                     var price = $(this).parent().next('span').text();
-                                    var productID = $(this).parent().next('span').next('span').text();
+                                    var productID = $(this).parent().next().next().next().text();
         
                                     if ($(this).attr("src") == "img/checkbox_full.png")
                                     {
